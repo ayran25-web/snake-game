@@ -125,7 +125,7 @@
         </div>
 
         <!-- Spelyta med Canvas & Overlay -->
-        <div id="game-border" class="relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center">
+        <div id="touch-area" class="relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center">
             
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
@@ -135,7 +135,7 @@
                     KLAR ATT SPELA?
                 </div>
                 <p id="overlay-desc" class="text-slate-300 text-[11px] sm:text-sm mb-2.5 max-w-xs">
-                    Pac-Man-mun aktiverad! Bossen dyker upp vid 250 poäng.
+                    Styr med knappar eller svip direkt på spelplanen!
                 </p>
 
                 <div class="w-full max-w-xs mb-2.5 space-y-1">
@@ -224,7 +224,7 @@
         let isGameOver = false;
         let gameSpeed = 95;
         let isMuted = false;
-        let mouthTick = 0; // Används för att animera munnen
+        let mouthTick = 0;
 
         // BOSS SYSTEM
         let isBossActive = false;
@@ -234,7 +234,6 @@
         let bossObstacles = [];
         let nextBossScoreThreshold = 250;
 
-        // SKINS DEFINITIONER (10 Skins)
         const SKINS = [
             { id: 'cyan', name: 'Cyber Cyan', cost: 0, color: '#22d3ee', hue: 180 },
             { id: 'red', name: 'Inferno Red', cost: 30, color: '#ef4444', hue: 10 },
@@ -348,7 +347,7 @@
             document.getElementById('score').textContent = '0';
             document.getElementById('bonus-timer-container').classList.add('hidden');
             document.getElementById('boss-hp-container').classList.add('hidden');
-            document.getElementById('game-border').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
+            document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
 
             spawnFood();
             document.getElementById('overlay').classList.add('hidden');
@@ -407,7 +406,7 @@
             bossHp = 100;
             bossPos = { x: 9, y: 2 };
             document.getElementById('boss-hp-container').classList.remove('hidden');
-            document.getElementById('game-border').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-red-500/80 neon-glow-red shadow-2xl flex items-center justify-center';
+            document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-red-500/80 neon-glow-red shadow-2xl flex items-center justify-center';
             spawnEmpAmmo();
             updateBossHpBar();
         }
@@ -450,7 +449,7 @@
             }
 
             snake.unshift(head);
-            mouthTick++; // Växla munstatus
+            mouthTick++;
 
             // Äta vanlig mat
             if (head.x === food.x && head.y === food.y) {
@@ -477,7 +476,7 @@
                 coinItem = null;
                 snake.pop();
             } 
-            // EMP Skott mot boss
+            // EMP Skott
             else if (isBossActive && empAmmo && head.x === empAmmo.x && head.y === empAmmo.y) {
                 bossHp -= 35;
                 playSound('boss_hit');
@@ -489,7 +488,7 @@
                     localStorage.setItem('neon_snake_coins', coins);
                     document.getElementById('coins').textContent = coins;
                     document.getElementById('boss-hp-container').classList.add('hidden');
-                    document.getElementById('game-border').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
+                    document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
                     bossObstacles = [];
                     empAmmo = null;
                     spawnFood();
@@ -623,7 +622,6 @@
                 const h = CELL_SIZE - 2;
 
                 if (isHead) {
-                    // Rita Pac-Man huvud med animerad mun
                     const isOpen = (mouthTick % 2 === 0);
                     let startAngle = 0, endAngle = Math.PI * 2;
 
@@ -639,7 +637,7 @@
                     ctx.lineTo(x + w / 2, y + h / 2);
                     ctx.fill();
 
-                    // Rita öga på huvudet
+                    // Öga
                     ctx.fillStyle = '#ffffff';
                     let eyeX = x + w / 2, eyeY = y + h / 2;
                     if (direction === 'RIGHT') { eyeX = x + w * 0.7; eyeY = y + h * 0.3; }
@@ -654,9 +652,7 @@
                     ctx.beginPath();
                     ctx.arc(eyeX, eyeY, 1, 0, Math.PI * 2);
                     ctx.fill();
-
                 } else {
-                    // Vanlig kroppssegment
                     ctx.beginPath();
                     ctx.roundRect(x, y, w, h, 4);
                     ctx.fill();
@@ -804,6 +800,7 @@
         bindBtn('btn-left', 'LEFT');
         bindBtn('btn-right', 'RIGHT');
 
+        // SWIPE-FUNKTIONALITET DIREKT PÅ SPELPLANEN
         let touchStartX = 0;
         let touchStartY = 0;
         const touchArea = document.getElementById('touch-area');
@@ -819,9 +816,9 @@
             const diffY = e.changedTouches[0].clientY - touchStartY;
 
             if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 20) changeDir(diffX > 0 ? 'RIGHT' : 'LEFT');
+                if (Math.abs(diffX) > 15) changeDir(diffX > 0 ? 'RIGHT' : 'LEFT');
             } else {
-                if (Math.abs(diffY) > 20) changeDir(diffY > 0 ? 'DOWN' : 'UP');
+                if (Math.abs(diffY) > 15) changeDir(diffY > 0 ? 'DOWN' : 'UP');
             }
         }, { passive: true });
 
