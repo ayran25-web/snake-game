@@ -115,7 +115,7 @@
         <div class="w-full max-w-[340px] h-9 mb-1 flex items-center">
             <div id="boss-hp-container" class="hidden w-full bg-red-950/90 border border-red-500 text-red-300 text-center text-xs font-arcade py-1 px-2.5 rounded-lg flex flex-col gap-0.5">
                 <div class="flex justify-between items-center font-bold text-[10px]">
-                    <span>⚠️ CYBER BOSS (250+ POÄNG)</span>
+                    <span>⚠️ CYBER BOSS (250 POÄNG)</span>
                     <span id="boss-hp-text">100/100</span>
                 </div>
                 <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-red-500/50">
@@ -239,7 +239,7 @@
         let snake = [];
         let direction = 'RIGHT';
         let nextDirection = 'RIGHT';
-        let food = { x: 0, y: 0 };
+        let food = { x: -1, y: -1 };
         let bonusFood = null;
         let coinItem = null;
         let empAmmo = null;
@@ -370,29 +370,36 @@
             gameInterval = setInterval(gameLoop, gameSpeed);
         }
 
-        // Säker slumpfunktion som aldrig sätter objekt på ormen eller andra aktiva objekt
+        // Säker slumpfunktion som aldrig placerar objekt på ormen eller befintliga objekt
         function getRandomEmptyCell() {
             let valid = false;
-            let x, y;
-            while (!valid) {
-                x = Math.floor(Math.random() * GRID_SIZE);
-                y = Math.floor(Math.random() * GRID_SIZE);
-                valid = !snake.some(s => s.x === x && s.y === y) &&
-                        !(food && food.x === x && food.y === y) &&
-                        !(coinItem && coinItem.x === x && coinItem.y === y) &&
-                        !(bonusFood && bonusFood.x === x && bonusFood.y === y) &&
-                        !(empAmmo && empAmmo.x === x && empAmmo.y === y);
+            let rx, ry;
+            let attempts = 0;
+            while (!valid && attempts < 500) {
+                attempts++;
+                rx = Math.floor(Math.random() * GRID_SIZE);
+                ry = Math.floor(Math.random() * GRID_SIZE);
+
+                const onSnake = snake.some(s => s.x === rx && s.y === ry);
+                const onFood = food && food.x === rx && food.y === ry;
+                const onCoin = coinItem && coinItem.x === rx && coinItem.y === ry;
+                const onBonus = bonusFood && bonusFood.x === rx && bonusFood.y === ry;
+                const onEmp = empAmmo && empAmmo.x === rx && empAmmo.y === ry;
+                const onBoss = isBossActive && (rx === bossPos.x || rx === bossPos.x + 1) && (ry === bossPos.y || ry === bossPos.y + 1);
+
+                valid = !onSnake && !onFood && !onCoin && !onBonus && !onEmp && !onBoss;
             }
-            return { x, y };
+            return { x: rx, y: ry };
         }
 
         function spawnFood() {
             const pos = getRandomEmptyCell();
-            food.x = pos.x;
-            food.y = pos.y;
+            food = { x: pos.x, y: pos.y };
 
-            if (!coinItem && Math.random() < 0.25) spawnCoin();
-            if (!bonusFood && Math.random() < 0.2) spawnBonusFood();
+            // 30% chans att skapa mynt
+            if (!coinItem && Math.random() < 0.3) spawnCoin();
+            // 25% chans att skapa guldbonus
+            if (!bonusFood && Math.random() < 0.25) spawnBonusFood();
         }
 
         function spawnCoin() {
@@ -402,7 +409,7 @@
 
         function spawnBonusFood() {
             const pos = getRandomEmptyCell();
-            bonusFood = { x: pos.x, y: pos.y, timer: 50, maxTimer: 50 };
+            bonusFood = { x: pos.x, y: pos.y, timer: 60, maxTimer: 60 };
             document.getElementById('bonus-timer-container').classList.remove('hidden');
         }
 
@@ -466,7 +473,7 @@
                 document.getElementById('score').textContent = score;
                 playSound('eat');
 
-                // Trigga Boss efter 250 poäng (och var 250:e poäng därefter)
+                // Trigga Boss BARA vid exakt 250 poäng (och var 250:e poäng därefter)
                 if (score > 0 && score % 250 === 0 && !isBossActive) {
                     triggerBossFight();
                 } else {
@@ -480,7 +487,7 @@
                 playSound('bonus');
                 bonusFood = null;
                 document.getElementById('bonus-timer-container').classList.add('hidden');
-                snake.pop(); // Växer inte extra på bonus
+                snake.pop();
             }
             // Samla mynt
             else if (coinItem && head.x === coinItem.x && head.y === coinItem.y) {
@@ -499,7 +506,7 @@
 
                 if (bossHp <= 0) {
                     isBossActive = false;
-                    coins += 25; // Extra bonusmynt för besegrad boss!
+                    coins += 25; // Bonusmynt för besegrad boss
                     localStorage.setItem('neon_snake_coins', coins);
                     document.getElementById('coins').textContent = coins;
                     document.getElementById('boss-hp-container').classList.add('hidden');
@@ -527,7 +534,7 @@
                 }
             }
 
-            // Boss-logik
+            // Boss-fällor
             if (isBossActive && Math.random() < 0.15) {
                 bossObstacles = [
                     { x: (bossPos.x + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE, y: (bossPos.y + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE }
@@ -561,7 +568,7 @@
                 ctx.stroke();
             }
 
-            // Rita Boss
+            // Boss
             if (isBossActive) {
                 ctx.fillStyle = '#ef4444';
                 ctx.shadowColor = '#ef4444';
@@ -584,7 +591,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Mynt
+            // Mynt (Lila cirkel)
             if (coinItem) {
                 ctx.fillStyle = '#a855f7';
                 ctx.shadowColor = '#a855f7';
@@ -595,7 +602,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Guldbonus
+            // Guldbonus (Gul lysande ruta)
             if (bonusFood) {
                 ctx.fillStyle = '#facc15';
                 ctx.shadowColor = '#facc15';
@@ -604,8 +611,8 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Vanlig mat
-            if (!isBossActive) {
+            // Vanlig mat (Cyan cirkel)
+            if (!isBossActive && food.x >= 0) {
                 ctx.fillStyle = '#22d3ee';
                 ctx.shadowColor = '#22d3ee';
                 ctx.shadowBlur = 12;
@@ -741,16 +748,14 @@
             if (dir === 'RIGHT' && direction !== 'LEFT') nextDirection = 'RIGHT';
         }
 
-        // Blixtsnabb respons med både touchstart och pointerdown
+        // Blixtsnabb knapphantering
         const bindBtn = (id, dir) => {
             const btn = document.getElementById(id);
             if (btn) {
-                const trigger = (e) => {
+                btn.addEventListener('pointerdown', (e) => {
                     e.preventDefault();
                     changeDir(dir);
-                };
-                btn.addEventListener('pointerdown', trigger, { passive: false });
-                btn.addEventListener('touchstart', trigger, { passive: false });
+                });
             }
         };
 
