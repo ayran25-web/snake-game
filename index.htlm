@@ -1,0 +1,655 @@
+<!DOCTYPE html>
+<html lang="sv">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Neon Snake Arcade</title>
+    <!-- Tailwind CSS för modern och snabb styling -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- FontAwesome för ikoner -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
+
+        body {
+            font-family: 'Inter', sans-serif;
+            background-color: #0d0f18;
+            color: #f1f5f9;
+            touch-action: manipulation;
+        }
+
+        .font-arcade {
+            font-family: 'Orbitron', sans-serif;
+        }
+
+        /* Neon-glödeffekter */
+        .neon-glow-cyan {
+            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2);
+        }
+
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.7);
+        }
+
+        .neon-text-pink {
+            text-shadow: 0 0 10px rgba(236, 72, 153, 0.7);
+        }
+
+        .neon-text-gold {
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.8);
+        }
+
+        .btn-arcade {
+            transition: all 0.15s ease-in-out;
+            text-shadow: 0 1px 2px rgba(0,0,0,0.5);
+        }
+
+        .btn-arcade:hover {
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(6, 182, 212, 0.4);
+        }
+
+        .btn-arcade:active {
+            transform: translateY(1px);
+        }
+
+        canvas {
+            image-rendering: pixelated;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col items-center justify-center p-2 sm:p-4 select-none">
+
+    <!-- Huvudbehållare -->
+    <div class="w-full max-w-4xl flex flex-col items-center">
+        
+        <!-- Titel & Header -->
+        <header class="text-center mb-3">
+            <h1 class="text-3xl sm:text-5xl font-extrabold font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 tracking-wider neon-text-cyan">
+                NEON SNAKE
+            </h1>
+            <p class="text-xs sm:text-sm text-slate-400 mt-1">
+                Styr med <span class="text-cyan-400 font-bold">Piltangenter</span> / <span class="text-cyan-400 font-bold">WASD</span> | Paus: <span class="text-pink-400 font-bold">Space</span>
+            </p>
+        </header>
+
+        <!-- Poäng & Statuspanel -->
+        <div class="w-full max-w-md bg-slate-900/90 border border-slate-700/60 rounded-xl p-3 mb-3 flex justify-between items-center shadow-lg backdrop-blur-md">
+            <!-- Nuvarande Poäng -->
+            <div class="flex flex-col items-start">
+                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Poäng</span>
+                <span id="score" class="text-2xl sm:text-3xl font-arcade font-bold text-cyan-400 neon-text-cyan">0</span>
+            </div>
+
+            <!-- Specialmat-timer (visas när guldmat finns) -->
+            <div id="bonus-timer-container" class="hidden flex flex-col items-center">
+                <span class="text-xs text-yellow-400 font-bold uppercase animate-pulse">GULDBONUS!</span>
+                <div class="w-20 bg-slate-800 h-2.5 rounded-full overflow-hidden mt-1 border border-yellow-500/40">
+                    <div id="bonus-timer-bar" class="bg-yellow-400 h-full w-full transition-all duration-100"></div>
+                </div>
+            </div>
+
+            <!-- Rekord / High Score -->
+            <div class="flex flex-col items-end">
+                <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Rekord</span>
+                <span id="high-score" class="text-2xl sm:text-3xl font-arcade font-bold text-pink-500 neon-text-pink">0</span>
+            </div>
+        </div>
+
+        <!-- Spelyta med Canvas & Overlay -->
+        <div class="relative w-full max-w-md aspect-square bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center">
+            
+            <!-- Canvas -->
+            <canvas id="gameCanvas" class="w-full h-full block"></canvas>
+
+            <!-- Meny & Pause/Game Over Overlay -->
+            <div id="overlay" class="absolute inset-0 bg-slate-950/85 backdrop-blur-md flex flex-col items-center justify-center p-6 text-center z-10 transition-all duration-300">
+                <div id="overlay-title" class="text-3xl sm:text-4xl font-arcade font-black text-cyan-400 mb-2 neon-text-cyan">
+                    KLAR ATT SPELA?
+                </div>
+                <p id="overlay-desc" class="text-slate-300 text-sm mb-5 max-w-xs">
+                    Samla mat, undvik väggar, hinder och din egen svans!
+                </p>
+
+                <!-- Svårighetsgrad och hinderinställning -->
+                <div class="w-full max-w-xs mb-5 space-y-2">
+                    <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Svårighetsgrad</label>
+                    <div class="grid grid-cols-3 gap-2">
+                        <button onclick="setSpeed('easy')" id="speed-easy" class="speed-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-bold text-slate-300 hover:border-cyan-400 transition">Lätt</button>
+                        <button onclick="setSpeed('medium')" id="speed-medium" class="speed-btn px-2 py-1.5 rounded-lg border border-cyan-500 bg-cyan-950/50 text-xs font-bold text-cyan-400 transition">Medium</button>
+                        <button onclick="setSpeed('hard')" id="speed-hard" class="speed-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-bold text-slate-300 hover:border-cyan-400 transition">Blixt</button>
+                    </div>
+
+                    <!-- Hinder-toggle -->
+                    <div class="flex items-center justify-between pt-2">
+                        <span class="text-xs text-slate-300 font-semibold">Aktivera Hinder</span>
+                        <input type="checkbox" id="toggle-obstacles" class="w-4 h-4 accent-pink-500 rounded cursor-pointer" onchange="toggleObstaclesSetting(this.checked)">
+                    </div>
+                </div>
+
+                <!-- Start / Spela Igen knapp -->
+                <button id="start-btn" onclick="startGame()" class="btn-arcade w-full max-w-xs py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-arcade font-bold text-lg rounded-xl shadow-lg border border-cyan-300 cursor-pointer">
+                    STARTA SPELET
+                </button>
+            </div>
+        </div>
+
+        <!-- Kontroll- & Pausknappar för Mobil/Mus -->
+        <div class="w-full max-w-md mt-4 flex flex-col items-center gap-3">
+            <!-- Paus / Ljud-knappar -->
+            <div class="flex gap-3 w-full justify-center">
+                <button onclick="togglePause()" class="btn-arcade flex-1 py-2 px-4 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-xs sm:text-sm text-slate-200 hover:bg-slate-700 flex items-center justify-center gap-2">
+                    <i class="fa-solid fa-pause text-cyan-400"></i> Paus (Space)
+                </button>
+                <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-2 px-4 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-xs sm:text-sm text-slate-200 hover:bg-slate-700 flex items-center justify-center gap-2">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400"></i>
+                </button>
+            </div>
+
+            <!-- D-Pad / Pilknappar på skärmen (för touch/mus) -->
+            <div class="grid grid-cols-3 gap-2 w-48 h-36 mt-1 sm:hidden">
+                <div></div>
+                <button onclick="handleTouchInput('UP')" class="bg-slate-800/80 active:bg-cyan-500 border border-slate-700 rounded-xl flex items-center justify-center text-xl text-cyan-400 active:text-slate-950 shadow-md">
+                    <i class="fa-solid fa-chevron-up"></i>
+                </button>
+                <div></div>
+                
+                <button onclick="handleTouchInput('LEFT')" class="bg-slate-800/80 active:bg-cyan-500 border border-slate-700 rounded-xl flex items-center justify-center text-xl text-cyan-400 active:text-slate-950 shadow-md">
+                    <i class="fa-solid fa-chevron-left"></i>
+                </button>
+                <button onclick="handleTouchInput('DOWN')" class="bg-slate-800/80 active:bg-cyan-500 border border-slate-700 rounded-xl flex items-center justify-center text-xl text-cyan-400 active:text-slate-950 shadow-md">
+                    <i class="fa-solid fa-chevron-down"></i>
+                </button>
+                <button onclick="handleTouchInput('RIGHT')" class="bg-slate-800/80 active:bg-cyan-500 border border-slate-700 rounded-xl flex items-center justify-center text-xl text-cyan-400 active:text-slate-950 shadow-md">
+                    <i class="fa-solid fa-chevron-right"></i>
+                </button>
+            </div>
+        </div>
+
+        <!-- Instruktionskort -->
+        <footer class="w-full max-w-md mt-4 p-3 bg-slate-900/60 border border-slate-800 rounded-xl text-xs text-slate-400 flex justify-between items-center">
+            <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 bg-cyan-400 rounded-full shadow-[0_0_8px_#22d3ee]"></span>
+                <span>Vanlig mat: <b>+10p</b></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 bg-yellow-400 rounded-full shadow-[0_0_8px_#facc15] animate-pulse"></span>
+                <span>Guldmat: <b>+30p</b></span>
+            </div>
+            <div class="flex items-center gap-2">
+                <span class="inline-block w-3 h-3 bg-red-500 rounded-sm"></span>
+                <span>Hinder</span>
+            </div>
+        </footer>
+
+    </div>
+
+    <!-- SPEL-LOGIK OCH LJUD -->
+    <script>
+        // Inställningar för spelplan
+        const GRID_SIZE = 20; // 20x20 rutor
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
+
+        // Anpassa canvas-storlek till upplösning
+        const CANVAS_SIZE = 400;
+        canvas.width = CANVAS_SIZE;
+        canvas.height = CANVAS_SIZE;
+        const CELL_SIZE = CANVAS_SIZE / GRID_SIZE;
+
+        // Speltillstånd
+        let snake = [];
+        let direction = 'RIGHT';
+        let nextDirection = 'RIGHT';
+        let food = { x: 0, y: 0 };
+        let bonusFood = null; // { x, y, timer, maxTimer }
+        let obstacles = [];
+        let score = 0;
+        let highScore = parseInt(localStorage.getItem('neon_snake_highscore')) || 0;
+        let gameInterval = null;
+        let isPaused = false;
+        let isGameOver = false;
+        let gameSpeed = 100; // ms per tick (Medium som standard)
+        let enableObstacles = false;
+        let isMuted = false;
+
+        // Web Audio API för ljudeffekter utan externa filer
+        const AudioContext = window.AudioContext || window.webkitAudioContext;
+        let audioCtx = null;
+
+        function initAudio() {
+            if (!audioCtx) {
+                audioCtx = new AudioContext();
+            }
+        }
+
+        function playSound(type) {
+            if (isMuted) return;
+            initAudio();
+            if (!audioCtx) return;
+
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            const now = audioCtx.currentTime;
+
+            if (type === 'eat') {
+                // Vanlig mat: Snabbt pip uppåt
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(300, now);
+                osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
+                osc.start(now);
+                osc.stop(now + 0.08);
+            } else if (type === 'bonus') {
+                // Guldmat: Glad ackord-effekt
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(523.25, now); // C5
+                osc.frequency.setValueAtTime(659.25, now + 0.06); // E5
+                osc.frequency.setValueAtTime(783.99, now + 0.12); // G5
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
+                osc.start(now);
+                osc.stop(now + 0.25);
+            } else if (type === 'gameover') {
+                // Game Over: Mörkt fallande ljud
+                osc.type = 'sawtooth';
+                osc.frequency.setValueAtTime(250, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+                gain.gain.setValueAtTime(0.3, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                osc.start(now);
+                osc.stop(now + 0.4);
+            }
+        }
+
+        // Ljud On/Off
+        function toggleMute() {
+            isMuted = !isMuted;
+            const soundIcon = document.getElementById('sound-icon');
+            if (isMuted) {
+                soundIcon.className = 'fa-solid fa-volume-xmark text-slate-500';
+            } else {
+                soundIcon.className = 'fa-solid fa-volume-high text-pink-400';
+            }
+        }
+
+        // Initiera High Score på skärmen
+        document.getElementById('high-score').textContent = highScore;
+
+        // Välj svårighetsgrad
+        function setSpeed(speed) {
+            document.querySelectorAll('.speed-btn').forEach(btn => {
+                btn.className = 'speed-btn px-2 py-1.5 rounded-lg border border-slate-700 bg-slate-800 text-xs font-bold text-slate-300 hover:border-cyan-400 transition';
+            });
+
+            const activeBtn = document.getElementById(`speed-${speed}`);
+            activeBtn.className = 'speed-btn px-2 py-1.5 rounded-lg border border-cyan-500 bg-cyan-950/50 text-xs font-bold text-cyan-400 transition';
+
+            if (speed === 'easy') gameSpeed = 130;
+            if (speed === 'medium') gameSpeed = 95;
+            if (speed === 'hard') gameSpeed = 65;
+        }
+
+        function toggleObstaclesSetting(checked) {
+            enableObstacles = checked;
+        }
+
+        // Starta om/Initiera spelet
+        function startGame() {
+            initAudio();
+            
+            // Återställ variabler
+            snake = [
+                { x: 10, y: 10 },
+                { x: 9, y: 10 },
+                { x: 8, y: 10 }
+            ];
+            direction = 'RIGHT';
+            nextDirection = 'RIGHT';
+            score = 0;
+            isPaused = false;
+            isGameOver = false;
+            bonusFood = null;
+            document.getElementById('score').textContent = '0';
+            document.getElementById('bonus-timer-container').classList.add('hidden');
+
+            // Skapa hinder om valt
+            generateObstacles();
+
+            // Placera ut mat
+            spawnFood();
+
+            // Göm overlay
+            document.getElementById('overlay').classList.add('hidden');
+
+            // Starta spel-loop
+            if (gameInterval) clearInterval(gameInterval);
+            gameInterval = setInterval(gameLoop, gameSpeed);
+        }
+
+        // Skapa slumpmässiga hinder
+        function generateObstacles() {
+            obstacles = [];
+            if (!enableObstacles) return;
+
+            const obstacleCount = 6;
+            for (let i = 0; i < obstacleCount; i++) {
+                let obsX, obsY;
+                do {
+                    obsX = Math.floor(Math.random() * GRID_SIZE);
+                    obsY = Math.floor(Math.random() * GRID_SIZE);
+                } while (
+                    // Undvik startområdet runt ormen
+                    (obsX >= 5 && obsX <= 12 && obsY >= 8 && obsY <= 12)
+                );
+                obstacles.push({ x: obsX, y: obsY });
+            }
+        }
+
+        // Skapa vanlig mat
+        function spawnFood() {
+            let valid = false;
+            while (!valid) {
+                food.x = Math.floor(Math.random() * GRID_SIZE);
+                food.y = Math.floor(Math.random() * GRID_SIZE);
+
+                valid = !snake.some(segment => segment.x === food.x && segment.y === food.y) &&
+                        !obstacles.some(obs => obs.x === food.x && obs.y === food.y);
+            }
+
+            // Chans att slumpmässigt skapa en guldmat om det inte redan finns en
+            if (!bonusFood && Math.random() < 0.25) {
+                spawnBonusFood();
+            }
+        }
+
+        // Skapa guldmat
+        function spawnBonusFood() {
+            let valid = false;
+            let bx, by;
+            while (!valid) {
+                bx = Math.floor(Math.random() * GRID_SIZE);
+                by = Math.floor(Math.random() * GRID_SIZE);
+
+                valid = !snake.some(segment => segment.x === bx && segment.y === by) &&
+                        !obstacles.some(obs => obs.x === bx && obs.y === by) &&
+                        (bx !== food.x || by !== food.y);
+            }
+
+            const maxTimer = 40; // Antal spel-ticks guldmaten finns kvar
+            bonusFood = { x: bx, y: by, timer: maxTimer, maxTimer: maxTimer };
+            document.getElementById('bonus-timer-container').classList.remove('hidden');
+        }
+
+        // Huvudloopen
+        function gameLoop() {
+            if (isPaused || isGameOver) return;
+
+            // Uppdatera riktning
+            direction = nextDirection;
+
+            // Beräkna nytt huvud
+            const head = { ...snake[0] };
+            if (direction === 'UP') head.y--;
+            if (direction === 'DOWN') head.y++;
+            if (direction === 'LEFT') head.x--;
+            if (direction === 'RIGHT') head.x++;
+
+            // Kollisionskontroll: Väggar
+            if (head.x < 0 || head.x >= GRID_SIZE || head.y < 0 || head.y >= GRID_SIZE) {
+                return gameOver();
+            }
+
+            // Kollisionskontroll: Egen kropp
+            if (snake.some(segment => segment.x === head.x && segment.y === head.y)) {
+                return gameOver();
+            }
+
+            // Kollisionskontroll: Hinder
+            if (obstacles.some(obs => obs.x === head.x && obs.y === head.y)) {
+                return gameOver();
+            }
+
+            // Flytta ormen framåt
+            snake.unshift(head);
+
+            // Kolla om ormen äter vanlig mat
+            if (head.x === food.x && head.y === food.y) {
+                score += 10;
+                document.getElementById('score').textContent = score;
+                playSound('eat');
+                spawnFood();
+            } else if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
+                // Ormen äter guldmat
+                score += 30;
+                document.getElementById('score').textContent = score;
+                playSound('bonus');
+                bonusFood = null;
+                document.getElementById('bonus-timer-container').classList.add('hidden');
+            } else {
+                // Ta bort sista segmentet om ingen mat äts
+                snake.pop();
+            }
+
+            // Hantera bonusmatens timer
+            if (bonusFood) {
+                bonusFood.timer--;
+                const percent = (bonusFood.timer / bonusFood.maxTimer) * 100;
+                document.getElementById('bonus-timer-bar').style.width = `${percent}%`;
+
+                if (bonusFood.timer <= 0) {
+                    bonusFood = null;
+                    document.getElementById('bonus-timer-container').classList.add('hidden');
+                }
+            }
+
+            // Rita upp spelplanen
+            draw();
+        }
+
+        // Rita alla element på canvas
+        function draw() {
+            // Rensa bakgrund
+            ctx.fillStyle = '#090d16';
+            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+
+            // Rita rutfält / gitter i bakgrunden
+            ctx.strokeStyle = '#1e293b';
+            ctx.lineWidth = 0.5;
+            for (let i = 0; i <= GRID_SIZE; i++) {
+                ctx.beginPath();
+                ctx.moveTo(i * CELL_SIZE, 0);
+                ctx.lineTo(i * CELL_SIZE, CANVAS_SIZE);
+                ctx.stroke();
+
+                ctx.beginPath();
+                ctx.moveTo(0, i * CELL_SIZE);
+                ctx.lineTo(CANVAS_SIZE, i * CELL_SIZE);
+                ctx.stroke();
+            }
+
+            // Rita hinder
+            obstacles.forEach(obs => {
+                ctx.fillStyle = '#ef4444';
+                ctx.shadowColor = '#ef4444';
+                ctx.shadowBlur = 8;
+                ctx.fillRect(obs.x * CELL_SIZE + 2, obs.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
+                ctx.shadowBlur = 0; // Återställ shadow
+            });
+
+            // Rita Vanlig Mat (Neon Cyan Cirkel)
+            ctx.fillStyle = '#22d3ee';
+            ctx.shadowColor = '#22d3ee';
+            ctx.shadowBlur = 12;
+            ctx.beginPath();
+            ctx.arc(
+                food.x * CELL_SIZE + CELL_SIZE / 2,
+                food.y * CELL_SIZE + CELL_SIZE / 2,
+                CELL_SIZE / 2.5,
+                0,
+                Math.PI * 2
+            );
+            ctx.fill();
+            ctx.shadowBlur = 0;
+
+            // Rita Guld/Bonusmat (Blinkande guldsstjärna/fyrkant)
+            if (bonusFood) {
+                ctx.fillStyle = '#facc15';
+                ctx.shadowColor = '#facc15';
+                ctx.shadowBlur = 15;
+                const offset = 3;
+                ctx.fillRect(
+                    bonusFood.x * CELL_SIZE + offset,
+                    bonusFood.y * CELL_SIZE + offset,
+                    CELL_SIZE - offset * 2,
+                    CELL_SIZE - offset * 2
+                );
+                ctx.shadowBlur = 0;
+            }
+
+            // Rita Ormen
+            snake.forEach((segment, index) => {
+                const isHead = index === 0;
+
+                // Huvudet är rosa, kroppen är färgtonad cyan
+                if (isHead) {
+                    ctx.fillStyle = '#ec4899';
+                    ctx.shadowColor = '#ec4899';
+                    ctx.shadowBlur = 10;
+                } else {
+                    ctx.fillStyle = `hsl(${180 + (index * 4) % 60}, 100%, 50%)`;
+                    ctx.shadowBlur = 0;
+                }
+
+                // Avrundade hörn på ormsegmenten
+                const radius = isHead ? 6 : 4;
+                const x = segment.x * CELL_SIZE + 1;
+                const y = segment.y * CELL_SIZE + 1;
+                const w = CELL_SIZE - 2;
+                const h = CELL_SIZE - 2;
+
+                ctx.beginPath();
+                ctx.roundRect(x, y, w, h, radius);
+                ctx.fill();
+                ctx.shadowBlur = 0;
+
+                // Ögon på huvudet
+                if (isHead) {
+                    ctx.fillStyle = '#ffffff';
+                    let eyeX1, eyeY1, eyeX2, eyeY2;
+                    const eyeOffset = 4;
+                    const eyeSize = 3;
+
+                    if (direction === 'RIGHT') {
+                        eyeX1 = eyeX2 = x + w - eyeOffset;
+                        eyeY1 = y + eyeOffset;
+                        eyeY2 = y + h - eyeOffset;
+                    } else if (direction === 'LEFT') {
+                        eyeX1 = eyeX2 = x + eyeOffset;
+                        eyeY1 = y + eyeOffset;
+                        eyeY2 = y + h - eyeOffset;
+                    } else if (direction === 'UP') {
+                        eyeY1 = eyeY2 = y + eyeOffset;
+                        eyeX1 = x + eyeOffset;
+                        eyeX2 = x + w - eyeOffset;
+                    } else { // DOWN
+                        eyeY1 = eyeY2 = y + h - eyeOffset;
+                        eyeX1 = x + eyeOffset;
+                        eyeX2 = x + w - eyeOffset;
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(eyeX1, eyeY1, eyeSize, 0, Math.PI * 2);
+                    ctx.arc(eyeX2, eyeY2, eyeSize, 0, Math.PI * 2);
+                    ctx.fill();
+                }
+            });
+        }
+
+        // Game Over-hantering
+        function gameOver() {
+            isGameOver = true;
+            clearInterval(gameInterval);
+            playSound('gameover');
+
+            // Spara High Score
+            if (score > highScore) {
+                highScore = score;
+                localStorage.setItem('neon_snake_highscore', highScore);
+                document.getElementById('high-score').textContent = highScore;
+            }
+
+            // Visa Overlay
+            const overlay = document.getElementById('overlay');
+            document.getElementById('overlay-title').textContent = 'GAME OVER';
+            document.getElementById('overlay-title').className = 'text-3xl sm:text-4xl font-arcade font-black text-pink-500 mb-2 neon-text-pink';
+            document.getElementById('overlay-desc').textContent = `Du fick ${score} poäng!`;
+            document.getElementById('start-btn').textContent = 'SPELA IGEN';
+            overlay.classList.remove('hidden');
+        }
+
+        // Pausa spelet
+        function togglePause() {
+            if (isGameOver) return;
+            isPaused = !isPaused;
+
+            const overlay = document.getElementById('overlay');
+            if (isPaused) {
+                document.getElementById('overlay-title').textContent = 'PAUSAT';
+                document.getElementById('overlay-title').className = 'text-3xl sm:text-4xl font-arcade font-black text-cyan-400 mb-2 neon-text-cyan';
+                document.getElementById('overlay-desc').textContent = 'Tryck Space eller klicka nedan för att fortsätta.';
+                document.getElementById('start-btn').textContent = 'FORTSÄTT';
+                overlay.classList.remove('hidden');
+            } else {
+                overlay.classList.add('hidden');
+            }
+        }
+
+        // Tangentbords-hantering (WASD + Piltangenter + Space)
+        window.addEventListener('keydown', e => {
+            // Förhindra att sidan scollar vid pil-tryck/space
+            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) {
+                e.preventDefault();
+            }
+
+            if (e.key === ' ' || e.code === 'Space') {
+                if (isGameOver) {
+                    startGame();
+                } else {
+                    togglePause();
+                }
+                return;
+            }
+
+            if (isPaused || isGameOver) return;
+
+            // Styrning
+            if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && direction !== 'DOWN') {
+                nextDirection = 'UP';
+            } else if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && direction !== 'UP') {
+                nextDirection = 'DOWN';
+            } else if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && direction !== 'RIGHT') {
+                nextDirection = 'LEFT';
+            } else if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && direction !== 'LEFT') {
+                nextDirection = 'RIGHT';
+            }
+        });
+
+        // Styrning via Touch / Knappar på skärmen
+        function handleTouchInput(dir) {
+            if (isPaused || isGameOver) return;
+            if (dir === 'UP' && direction !== 'DOWN') nextDirection = 'UP';
+            if (dir === 'DOWN' && direction !== 'UP') nextDirection = 'DOWN';
+            if (dir === 'LEFT' && direction !== 'RIGHT') nextDirection = 'LEFT';
+            if (dir === 'RIGHT' && direction !== 'LEFT') nextDirection = 'RIGHT';
+        }
+
+        // Första uppritning av tom spelplan
+        draw();
+    </script>
+</body>
+</html>
