@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supercharged Neon Snake - Boss & Shop Edition</title>
+    <title>Supercharged Neon Snake - Arcade Edition</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -115,7 +115,7 @@
         <div class="w-full max-w-[340px] h-9 mb-1 flex items-center">
             <div id="boss-hp-container" class="hidden w-full bg-red-950/90 border border-red-500 text-red-300 text-center text-xs font-arcade py-1 px-2.5 rounded-lg flex flex-col gap-0.5">
                 <div class="flex justify-between items-center font-bold text-[10px]">
-                    <span>⚠️ CYBER BOSS (250 POÄNG)</span>
+                    <span>⚠️ CYBER BOSS</span>
                     <span id="boss-hp-text">100/100</span>
                 </div>
                 <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-red-500/50">
@@ -135,7 +135,7 @@
                     KLAR ATT SPELA?
                 </div>
                 <p id="overlay-desc" class="text-slate-300 text-[11px] sm:text-sm mb-2.5 max-w-xs">
-                    Samla poäng, mynt och guldbonusar. Bossen väntar vid 250 poäng!
+                    Pac-Man-mun aktiverad! Bossen dyker upp vid 250 poäng.
                 </p>
 
                 <div class="w-full max-w-xs mb-2.5 space-y-1">
@@ -158,47 +158,17 @@
             </div>
 
             <!-- SHOP OVERLAY -->
-            <div id="shop-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-start p-4 text-center z-20 overflow-y-auto">
-                <div class="flex justify-between items-center w-full max-w-xs mb-3 border-b border-slate-800 pb-2">
-                    <h2 class="text-lg font-arcade font-bold text-purple-400 neon-text-purple"><i class="fa-solid fa-store"></i> SKIN SHOP</h2>
-                    <button onclick="closeShop()" class="text-slate-400 hover:text-white text-lg"><i class="fa-solid fa-xmark"></i></button>
+            <div id="shop-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-start p-3 text-center z-20 overflow-y-auto">
+                <div class="flex justify-between items-center w-full max-w-xs mb-2 border-b border-slate-800 pb-1.5">
+                    <h2 class="text-base font-arcade font-bold text-purple-400 neon-text-purple"><i class="fa-solid fa-store"></i> SKIN SHOP</h2>
+                    <button onclick="closeShop()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
                 </div>
 
-                <div class="w-full max-w-xs space-y-2 mb-3">
-                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                        <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
-                            <span class="text-xs font-bold text-slate-200">Cyber Cyan</span>
-                        </div>
-                        <button onclick="selectSkin('cyan')" id="skin-btn-cyan" class="px-2.5 py-1 bg-cyan-500 text-slate-950 font-bold text-[10px] rounded-lg">VALD</button>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                        <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]"></div>
-                            <span class="text-xs font-bold text-slate-200">Inferno Red</span>
-                        </div>
-                        <button onclick="buySkin('red', 30)" id="skin-btn-red" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[10px] rounded-lg">30 🪙</button>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                        <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
-                            <span class="text-xs font-bold text-slate-200">Matrix Code</span>
-                        </div>
-                        <button onclick="buySkin('green', 60)" id="skin-btn-green" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[10px] rounded-lg">60 🪙</button>
-                    </div>
-
-                    <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
-                        <div class="flex items-center gap-2">
-                            <div class="w-5 h-5 rounded-full bg-yellow-400 shadow-[0_0_8px_#facc15]"></div>
-                            <span class="text-xs font-bold text-slate-200">Golden Royale</span>
-                        </div>
-                        <button onclick="buySkin('gold', 120)" id="skin-btn-gold" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[10px] rounded-lg">120 🪙</button>
-                    </div>
+                <div class="w-full max-w-xs space-y-1.5 mb-3 pr-1 max-h-[220px] overflow-y-auto">
+                    <div id="shop-items-container" class="space-y-1.5"></div>
                 </div>
 
-                <button onclick="closeShop()" class="w-full max-w-xs py-2 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700">TILLBAKA</button>
+                <button onclick="closeShop()" class="w-full max-w-xs py-1.5 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700">TILLBAKA</button>
             </div>
         </div>
 
@@ -254,6 +224,7 @@
         let isGameOver = false;
         let gameSpeed = 95;
         let isMuted = false;
+        let mouthTick = 0; // Används för att animera munnen
 
         // BOSS SYSTEM
         let isBossActive = false;
@@ -261,6 +232,21 @@
         let bossMaxHp = 100;
         let bossPos = { x: 9, y: 2 };
         let bossObstacles = [];
+        let nextBossScoreThreshold = 250;
+
+        // SKINS DEFINITIONER (10 Skins)
+        const SKINS = [
+            { id: 'cyan', name: 'Cyber Cyan', cost: 0, color: '#22d3ee', hue: 180 },
+            { id: 'red', name: 'Inferno Red', cost: 30, color: '#ef4444', hue: 10 },
+            { id: 'green', name: 'Matrix Code', cost: 50, color: '#10b981', hue: 140 },
+            { id: 'gold', name: 'Golden Royale', cost: 80, color: '#facc15', hue: 48 },
+            { id: 'violet', name: 'Neon Violet', cost: 100, color: '#a855f7', hue: 270 },
+            { id: 'pink', name: 'Kawaii Pink', cost: 120, color: '#f472b6', hue: 330 },
+            { id: 'white', name: 'Pure White', cost: 150, color: '#f8fafc', hue: 0 },
+            { id: 'orange', name: 'Toxic Hazard', cost: 180, color: '#f97316', hue: 25 },
+            { id: 'blue', name: 'Deep Space', cost: 200, color: '#3b82f6', hue: 215 },
+            { id: 'rainbow', name: 'Rainbow Chroma', cost: 300, color: 'rainbow', hue: 'rainbow' }
+        ];
 
         document.getElementById('high-score').textContent = highScore;
         document.getElementById('coins').textContent = coins;
@@ -350,6 +336,7 @@
             direction = 'UP';
             nextDirection = 'UP';
             score = 0;
+            nextBossScoreThreshold = 250;
             isBossActive = false;
             isPaused = false;
             isGameOver = false;
@@ -370,7 +357,6 @@
             gameInterval = setInterval(gameLoop, gameSpeed);
         }
 
-        // Säker slumpfunktion som aldrig placerar objekt på ormen eller befintliga objekt
         function getRandomEmptyCell() {
             let valid = false;
             let rx, ry;
@@ -396,10 +382,8 @@
             const pos = getRandomEmptyCell();
             food = { x: pos.x, y: pos.y };
 
-            // 30% chans att skapa mynt
-            if (!coinItem && Math.random() < 0.3) spawnCoin();
-            // 25% chans att skapa guldbonus
-            if (!bonusFood && Math.random() < 0.25) spawnBonusFood();
+            if (!coinItem && Math.random() < 0.35) spawnCoin();
+            if (!bonusFood && Math.random() < 0.3) spawnBonusFood();
         }
 
         function spawnCoin() {
@@ -409,7 +393,7 @@
 
         function spawnBonusFood() {
             const pos = getRandomEmptyCell();
-            bonusFood = { x: pos.x, y: pos.y, timer: 60, maxTimer: 60 };
+            bonusFood = { x: pos.x, y: pos.y, timer: 65, maxTimer: 65 };
             document.getElementById('bonus-timer-container').classList.remove('hidden');
         }
 
@@ -451,12 +435,12 @@
             if (head.y < 0) head.y = GRID_SIZE - 1;
             if (head.y >= GRID_SIZE) head.y = 0;
 
-            // Krocka med sin egen svans -> Dö
+            // Krocka med svans
             if (snake.some(s => s.x === head.x && s.y === head.y)) {
                 return gameOver();
             }
 
-            // Krocka med Bossen eller dess fällor -> Dö!
+            // Krocka med Boss
             if (isBossActive) {
                 const hitBossX = (head.x === bossPos.x || head.x === bossPos.x + 1);
                 const hitBossY = (head.y === bossPos.y || head.y === bossPos.y + 1);
@@ -466,21 +450,16 @@
             }
 
             snake.unshift(head);
+            mouthTick++; // Växla munstatus
 
             // Äta vanlig mat
             if (head.x === food.x && head.y === food.y) {
                 score += 10;
                 document.getElementById('score').textContent = score;
                 playSound('eat');
-
-                // Trigga Boss BARA vid exakt 250 poäng (och var 250:e poäng därefter)
-                if (score > 0 && score % 250 === 0 && !isBossActive) {
-                    triggerBossFight();
-                } else {
-                    spawnFood();
-                }
+                spawnFood();
             } 
-            // Samla guldbonus (+30 poäng)
+            // Guldbonus
             else if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
                 score += 30;
                 document.getElementById('score').textContent = score;
@@ -489,7 +468,7 @@
                 document.getElementById('bonus-timer-container').classList.add('hidden');
                 snake.pop();
             }
-            // Samla mynt
+            // Mynt
             else if (coinItem && head.x === coinItem.x && head.y === coinItem.y) {
                 coins += 1;
                 localStorage.setItem('neon_snake_coins', coins);
@@ -498,7 +477,7 @@
                 coinItem = null;
                 snake.pop();
             } 
-            // Skada bossen med EMP-skott
+            // EMP Skott mot boss
             else if (isBossActive && empAmmo && head.x === empAmmo.x && head.y === empAmmo.y) {
                 bossHp -= 35;
                 playSound('boss_hit');
@@ -506,7 +485,7 @@
 
                 if (bossHp <= 0) {
                     isBossActive = false;
-                    coins += 25; // Bonusmynt för besegrad boss
+                    coins += 30;
                     localStorage.setItem('neon_snake_coins', coins);
                     document.getElementById('coins').textContent = coins;
                     document.getElementById('boss-hp-container').classList.add('hidden');
@@ -523,7 +502,11 @@
                 snake.pop();
             }
 
-            // Hantera guldbonus-timer
+            if (score >= nextBossScoreThreshold && !isBossActive) {
+                nextBossScoreThreshold += 250;
+                triggerBossFight();
+            }
+
             if (bonusFood) {
                 bonusFood.timer--;
                 const percent = (bonusFood.timer / bonusFood.maxTimer) * 100;
@@ -534,7 +517,6 @@
                 }
             }
 
-            // Boss-fällor
             if (isBossActive && Math.random() < 0.15) {
                 bossObstacles = [
                     { x: (bossPos.x + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE, y: (bossPos.y + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE }
@@ -545,10 +527,14 @@
         }
 
         function getSkinColor(index) {
-            if (activeSkin === 'red') return `hsl(${10 + index * 3}, 100%, 50%)`;
-            if (activeSkin === 'green') return `hsl(${130 + index * 3}, 100%, 50%)`;
-            if (activeSkin === 'gold') return `hsl(${45 + index * 2}, 100%, 50%)`;
-            return `hsl(${180 + (index * 4) % 60}, 100%, 50%)`;
+            const currentSkinObj = SKINS.find(s => s.id === activeSkin) || SKINS[0];
+            if (currentSkinObj.hue === 'rainbow') {
+                return `hsl(${(Date.now() / 10 + index * 15) % 360}, 100%, 50%)`;
+            }
+            if (activeSkin === 'white') {
+                return `hsl(0, 0%, ${100 - index * 2}%)`;
+            }
+            return `hsl(${currentSkinObj.hue + (index * 3) % 40}, 100%, 50%)`;
         }
 
         function draw() {
@@ -591,7 +577,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Mynt (Lila cirkel)
+            // Mynt
             if (coinItem) {
                 ctx.fillStyle = '#a855f7';
                 ctx.shadowColor = '#a855f7';
@@ -602,7 +588,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Guldbonus (Gul lysande ruta)
+            // Guldbonus
             if (bonusFood) {
                 ctx.fillStyle = '#facc15';
                 ctx.shadowColor = '#facc15';
@@ -611,7 +597,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Vanlig mat (Cyan cirkel)
+            // Vanlig mat
             if (!isBossActive && food.x >= 0) {
                 ctx.fillStyle = '#22d3ee';
                 ctx.shadowColor = '#22d3ee';
@@ -622,7 +608,7 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Ormen
+            // Ormen med Pac-Man-mun & ögon
             snake.forEach((segment, index) => {
                 const isHead = index === 0;
                 ctx.fillStyle = isHead ? '#ec4899' : getSkinColor(index);
@@ -631,15 +617,50 @@
                     ctx.shadowBlur = 10;
                 }
 
-                const radius = isHead ? 6 : 4;
                 const x = segment.x * CELL_SIZE + 1;
                 const y = segment.y * CELL_SIZE + 1;
                 const w = CELL_SIZE - 2;
                 const h = CELL_SIZE - 2;
 
-                ctx.beginPath();
-                ctx.roundRect(x, y, w, h, radius);
-                ctx.fill();
+                if (isHead) {
+                    // Rita Pac-Man huvud med animerad mun
+                    const isOpen = (mouthTick % 2 === 0);
+                    let startAngle = 0, endAngle = Math.PI * 2;
+
+                    if (isOpen) {
+                        if (direction === 'RIGHT') { startAngle = 0.2; endAngle = 1.8; }
+                        else if (direction === 'DOWN') { startAngle = 0.7; endAngle = 2.3; }
+                        else if (direction === 'LEFT') { startAngle = 1.2; endAngle = 2.8; }
+                        else if (direction === 'UP') { startAngle = 1.7; endAngle = 3.3; }
+                    }
+
+                    ctx.beginPath();
+                    ctx.arc(x + w / 2, y + h / 2, w / 2, startAngle * Math.PI, endAngle * Math.PI);
+                    ctx.lineTo(x + w / 2, y + h / 2);
+                    ctx.fill();
+
+                    // Rita öga på huvudet
+                    ctx.fillStyle = '#ffffff';
+                    let eyeX = x + w / 2, eyeY = y + h / 2;
+                    if (direction === 'RIGHT') { eyeX = x + w * 0.7; eyeY = y + h * 0.3; }
+                    else if (direction === 'LEFT') { eyeX = x + w * 0.3; eyeY = y + h * 0.3; }
+                    else if (direction === 'UP') { eyeX = x + w * 0.7; eyeY = y + h * 0.3; }
+                    else if (direction === 'DOWN') { eyeX = x + w * 0.7; eyeY = y + h * 0.7; }
+
+                    ctx.beginPath();
+                    ctx.arc(eyeX, eyeY, 2.5, 0, Math.PI * 2);
+                    ctx.fill();
+                    ctx.fillStyle = '#000000';
+                    ctx.beginPath();
+                    ctx.arc(eyeX, eyeY, 1, 0, Math.PI * 2);
+                    ctx.fill();
+
+                } else {
+                    // Vanlig kroppssegment
+                    ctx.beginPath();
+                    ctx.roundRect(x, y, w, h, 4);
+                    ctx.fill();
+                }
                 ctx.shadowBlur = 0;
             });
         }
@@ -680,7 +701,7 @@
         }
 
         function openShop() {
-            updateShopUI();
+            renderShop();
             document.getElementById('shop-overlay').classList.remove('hidden');
         }
 
@@ -688,39 +709,59 @@
             document.getElementById('shop-overlay').classList.add('hidden');
         }
 
-        function selectSkin(skin) {
-            activeSkin = skin;
-            localStorage.setItem('neon_snake_skin', skin);
-            updateShopUI();
+        function selectSkin(skinId) {
+            activeSkin = skinId;
+            localStorage.setItem('neon_snake_skin', skinId);
+            renderShop();
         }
 
-        function buySkin(skin, cost) {
-            if (unlockedSkins.includes(skin)) {
-                selectSkin(skin);
+        function buySkin(skinId, cost) {
+            if (unlockedSkins.includes(skinId)) {
+                selectSkin(skinId);
                 return;
             }
             if (coins >= cost) {
                 coins -= cost;
                 localStorage.setItem('neon_snake_coins', coins);
                 document.getElementById('coins').textContent = coins;
-                unlockedSkins.push(skin);
+                unlockedSkins.push(skinId);
                 localStorage.setItem('neon_snake_unlocked_skins', JSON.stringify(unlockedSkins));
-                selectSkin(skin);
+                selectSkin(skinId);
             }
         }
 
-        function updateShopUI() {
-            ['cyan', 'red', 'green', 'gold'].forEach(s => {
-                const btn = document.getElementById(`skin-btn-${s}`);
-                if (btn) {
-                    if (activeSkin === s) {
-                        btn.textContent = 'VALD';
-                        btn.className = 'px-2.5 py-1 bg-cyan-500 text-slate-950 font-bold text-[10px] rounded-lg';
-                    } else if (unlockedSkins.includes(s)) {
-                        btn.textContent = 'VÄLJ';
-                        btn.className = 'px-2.5 py-1 bg-slate-700 text-white font-bold text-[10px] rounded-lg';
-                    }
+        function renderShop() {
+            const container = document.getElementById('shop-items-container');
+            container.innerHTML = '';
+
+            SKINS.forEach(s => {
+                const isUnlocked = unlockedSkins.includes(s.id);
+                const isSelected = activeSkin === s.id;
+
+                const div = document.createElement('div');
+                div.className = 'flex items-center justify-between bg-slate-900 border border-slate-800 p-1.5 rounded-xl';
+
+                const colorCircle = s.color === 'rainbow' 
+                    ? `<div class="w-4 h-4 rounded-full bg-gradient-to-r from-red-500 via-green-500 to-blue-500 animate-spin"></div>`
+                    : `<div class="w-4 h-4 rounded-full" style="background-color: ${s.color}"></div>`;
+
+                let btnHtml = '';
+                if (isSelected) {
+                    btnHtml = `<button class="px-2 py-0.5 bg-cyan-500 text-slate-950 font-bold text-[9px] rounded-md">VALD</button>`;
+                } else if (isUnlocked) {
+                    btnHtml = `<button onclick="selectSkin('${s.id}')" class="px-2 py-0.5 bg-slate-700 text-white font-bold text-[9px] rounded-md">VÄLJ</button>`;
+                } else {
+                    btnHtml = `<button onclick="buySkin('${s.id}', ${s.cost})" class="px-2 py-0.5 bg-purple-600 text-white font-bold text-[9px] rounded-md">${s.cost} 🪙</button>`;
                 }
+
+                div.innerHTML = `
+                    <div class="flex items-center gap-2">
+                        ${colorCircle}
+                        <span class="text-xs font-bold text-slate-200">${s.name}</span>
+                    </div>
+                    ${btnHtml}
+                `;
+                container.appendChild(div);
             });
         }
 
@@ -748,7 +789,6 @@
             if (dir === 'RIGHT' && direction !== 'LEFT') nextDirection = 'RIGHT';
         }
 
-        // Blixtsnabb knapphantering
         const bindBtn = (id, dir) => {
             const btn = document.getElementById(id);
             if (btn) {
