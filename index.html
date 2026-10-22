@@ -15,7 +15,7 @@
             font-family: 'Inter', sans-serif;
             background-color: #0d0f18;
             color: #f1f5f9;
-            touch-action: none; /* Förhindrar zoom och scroll på mobilen */
+            touch-action: none;
             user-select: none;
             -webkit-user-select: none;
         }
@@ -24,7 +24,6 @@
             font-family: 'Orbitron', sans-serif;
         }
 
-        /* Neon-glödeffekter */
         .neon-glow-cyan {
             box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 15px rgba(6, 182, 212, 0.2);
         }
@@ -45,10 +44,11 @@
         .btn-touch {
             touch-action: manipulation;
             -webkit-tap-highlight-color: transparent;
+            cursor: pointer;
         }
 
         .btn-touch:active {
-            transform: scale(0.92);
+            transform: scale(0.90);
             background-color: rgba(6, 182, 212, 0.3) !important;
         }
 
@@ -74,13 +74,11 @@
 
         <!-- Poäng & Statuspanel -->
         <div class="w-full max-w-md bg-slate-900/90 border border-slate-700/60 rounded-xl p-3 mb-2 flex justify-between items-center shadow-lg backdrop-blur-md">
-            <!-- Nuvarande Poäng -->
             <div class="flex flex-col items-start">
                 <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Poäng</span>
                 <span id="score" class="text-2xl sm:text-3xl font-arcade font-bold text-cyan-400 neon-text-cyan">0</span>
             </div>
 
-            <!-- Specialmat-timer -->
             <div id="bonus-timer-container" class="hidden flex flex-col items-center">
                 <span class="text-xs text-yellow-400 font-bold uppercase animate-pulse">GULDBONUS!</span>
                 <div class="w-20 bg-slate-800 h-2.5 rounded-full overflow-hidden mt-1 border border-yellow-500/40">
@@ -88,7 +86,6 @@
                 </div>
             </div>
 
-            <!-- Rekord / High Score -->
             <div class="flex flex-col items-end">
                 <span class="text-xs text-slate-400 font-semibold uppercase tracking-wider">Rekord</span>
                 <span id="high-score" class="text-2xl sm:text-3xl font-arcade font-bold text-pink-500 neon-text-pink">0</span>
@@ -98,7 +95,6 @@
         <!-- Spelyta med Canvas & Overlay -->
         <div class="relative w-full max-w-md aspect-square bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center" id="touch-area">
             
-            <!-- Canvas -->
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
             <!-- Meny & Pause/Game Over Overlay -->
@@ -110,7 +106,6 @@
                     Åk igenom väggarna, samla mat och undvik din egen svans!
                 </p>
 
-                <!-- Svårighetsgrad och hinderinställning -->
                 <div class="w-full max-w-xs mb-4 space-y-2">
                     <label class="block text-xs font-semibold text-slate-400 uppercase tracking-wider">Svårighetsgrad</label>
                     <div class="grid grid-cols-3 gap-2">
@@ -125,7 +120,6 @@
                     </div>
                 </div>
 
-                <!-- Startknapp -->
                 <button id="start-btn" onclick="startGame()" class="btn-arcade w-full max-w-xs py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-arcade font-bold text-lg rounded-xl shadow-lg border border-cyan-300 cursor-pointer">
                     STARTA SPELET
                 </button>
@@ -135,32 +129,31 @@
         <!-- Paus/Ljud & Mobilkontroller -->
         <div class="w-full max-w-md mt-3 flex flex-col items-center gap-2">
             
-            <!-- Paus & Ljud -->
             <div class="flex gap-2 w-full justify-center">
                 <button onclick="togglePause()" class="btn-arcade flex-1 py-1.5 px-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-xs text-slate-200 flex items-center justify-center gap-2">
-                    <i class="fa-solid fa-pause text-cyan-400"></i> Paus
+                    <i class="fa-solid fa-pause text-cyan-400 pointer-events-none"></i> Paus
                 </button>
                 <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1.5 px-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-xs text-slate-200 flex items-center justify-center gap-2">
-                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400"></i>
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400 pointer-events-none"></i>
                 </button>
             </div>
 
-            <!-- Nya Bättre Mobilknappar -->
+            <!-- Mobilknappar med fixad touch -->
             <div class="grid grid-cols-3 gap-2 w-56 h-36 mt-1">
                 <div></div>
-                <button id="btn-up" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg active:scale-90 transition-transform">
-                    <i class="fa-solid fa-chevron-up"></i>
+                <button id="btn-up" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg">
+                    <i class="fa-solid fa-chevron-up pointer-events-none"></i>
                 </button>
                 <div></div>
                 
-                <button id="btn-left" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg active:scale-90 transition-transform">
-                    <i class="fa-solid fa-chevron-left"></i>
+                <button id="btn-left" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg">
+                    <i class="fa-solid fa-chevron-left pointer-events-none"></i>
                 </button>
-                <button id="btn-down" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg active:scale-90 transition-transform">
-                    <i class="fa-solid fa-chevron-down"></i>
+                <button id="btn-down" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg">
+                    <i class="fa-solid fa-chevron-down pointer-events-none"></i>
                 </button>
-                <button id="btn-right" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg active:scale-90 transition-transform">
-                    <i class="fa-solid fa-chevron-right"></i>
+                <button id="btn-right" class="btn-touch bg-slate-800/90 border-2 border-cyan-500/60 rounded-2xl flex items-center justify-center text-2xl text-cyan-400 shadow-lg">
+                    <i class="fa-solid fa-chevron-right pointer-events-none"></i>
                 </button>
             </div>
         </div>
@@ -193,7 +186,6 @@
         let enableObstacles = false;
         let isMuted = false;
 
-        // Web Audio API
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -244,7 +236,7 @@
         function toggleMute() {
             isMuted = !isMuted;
             const soundIcon = document.getElementById('sound-icon');
-            soundIcon.className = isMuted ? 'fa-solid fa-volume-xmark text-slate-500' : 'fa-solid fa-volume-high text-pink-400';
+            soundIcon.className = isMuted ? 'fa-solid fa-volume-xmark text-slate-500 pointer-events-none' : 'fa-solid fa-volume-high text-pink-400 pointer-events-none';
         }
 
         document.getElementById('high-score').textContent = highScore;
@@ -335,13 +327,12 @@
             if (direction === 'LEFT') head.x--;
             if (direction === 'RIGHT') head.x++;
 
-            // TUNNEL-EFFEKT: Åk igenom väggarna
+            // Tunnel-effekt
             if (head.x < 0) head.x = GRID_SIZE - 1;
             if (head.x >= GRID_SIZE) head.x = 0;
             if (head.y < 0) head.y = GRID_SIZE - 1;
             if (head.y >= GRID_SIZE) head.y = 0;
 
-            // Kollisionskontroll: Kropp & Hinder
             if (snake.some(s => s.x === head.x && s.y === head.y) ||
                 obstacles.some(o => o.x === head.x && o.y === head.y)) {
                 return gameOver();
@@ -394,7 +385,6 @@
                 ctx.stroke();
             }
 
-            // Hinder
             obstacles.forEach(obs => {
                 ctx.fillStyle = '#ef4444';
                 ctx.shadowColor = '#ef4444';
@@ -403,7 +393,6 @@
                 ctx.shadowBlur = 0;
             });
 
-            // Mat
             ctx.fillStyle = '#22d3ee';
             ctx.shadowColor = '#22d3ee';
             ctx.shadowBlur = 12;
@@ -412,7 +401,6 @@
             ctx.fill();
             ctx.shadowBlur = 0;
 
-            // Guldmat
             if (bonusFood) {
                 ctx.fillStyle = '#facc15';
                 ctx.shadowColor = '#facc15';
@@ -421,7 +409,6 @@
                 ctx.shadowBlur = 0;
             }
 
-            // Ormen
             snake.forEach((segment, index) => {
                 const isHead = index === 0;
                 if (isHead) {
@@ -481,7 +468,7 @@
             }
         }
 
-        // Tangentbordsstyre
+        // Tangentbord
         window.addEventListener('keydown', e => {
             if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
             if (e.key === ' ' || e.code === 'Space') {
@@ -496,10 +483,10 @@
             if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && direction !== 'LEFT') nextDirection = 'RIGHT';
         });
 
-        // OMEDELBAR TOUCH-RESPONS (Ingen fördröjning)
+        // Robust mobilknapps-hantering med pointerdown
         function changeDir(dir) {
             initAudio();
-            if (navigator.vibrate) navigator.vibrate(10); // Liten vibration
+            if (navigator.vibrate) navigator.vibrate(10);
             if (isPaused || isGameOver) return;
             if (dir === 'UP' && direction !== 'DOWN') nextDirection = 'UP';
             if (dir === 'DOWN' && direction !== 'UP') nextDirection = 'DOWN';
@@ -509,8 +496,12 @@
 
         const bindBtn = (id, dir) => {
             const btn = document.getElementById(id);
-            btn.addEventListener('touchstart', (e) => { e.preventDefault(); changeDir(dir); }, { passive: false });
-            btn.addEventListener('mousedown', (e) => { e.preventDefault(); changeDir(dir); });
+            if (btn) {
+                btn.addEventListener('pointerdown', (e) => {
+                    e.preventDefault();
+                    changeDir(dir);
+                });
+            }
         };
 
         bindBtn('btn-up', 'UP');
@@ -518,7 +509,7 @@
         bindBtn('btn-left', 'LEFT');
         bindBtn('btn-right', 'RIGHT');
 
-        // SVIP-FUNKTIONALITET DIREKT PÅ SPELPLANEN
+        // Svip-funktionalitet
         let touchStartX = 0;
         let touchStartY = 0;
         const touchArea = document.getElementById('touch-area');
