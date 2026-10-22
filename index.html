@@ -135,7 +135,7 @@
                     KLAR ATT SPELA?
                 </div>
                 <p id="overlay-desc" class="text-slate-300 text-[11px] sm:text-sm mb-2.5 max-w-xs">
-                    Styr med knappar eller svip direkt på spelplanen!
+                    Svipa på spelplanen eller använd knapparna!
                 </p>
 
                 <div class="w-full max-w-xs mb-2.5 space-y-1">
@@ -800,7 +800,7 @@
         bindBtn('btn-left', 'LEFT');
         bindBtn('btn-right', 'RIGHT');
 
-        // SWIPE-FUNKTIONALITET DIREKT PÅ SPELPLANEN
+        // FIXAD SWIPE-FUNKTIONALITET MED TOUCHMOVE OCH PASSIVE: FALSE
         let touchStartX = 0;
         let touchStartY = 0;
         const touchArea = document.getElementById('touch-area');
@@ -808,7 +808,11 @@
         touchArea.addEventListener('touchstart', e => {
             touchStartX = e.touches[0].clientX;
             touchStartY = e.touches[0].clientY;
-        }, { passive: true });
+        }, { passive: false });
+
+        touchArea.addEventListener('touchmove', e => {
+            e.preventDefault(); // Hindrar skärmen från att skrolla
+        }, { passive: false });
 
         touchArea.addEventListener('touchend', e => {
             if (isPaused || isGameOver) return;
@@ -816,11 +820,11 @@
             const diffY = e.changedTouches[0].clientY - touchStartY;
 
             if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 15) changeDir(diffX > 0 ? 'RIGHT' : 'LEFT');
+                if (Math.abs(diffX) > 10) changeDir(diffX > 0 ? 'RIGHT' : 'LEFT');
             } else {
-                if (Math.abs(diffY) > 15) changeDir(diffY > 0 ? 'DOWN' : 'UP');
+                if (Math.abs(diffY) > 10) changeDir(diffY > 0 ? 'DOWN' : 'UP');
             }
-        }, { passive: true });
+        }, { passive: false });
 
         draw();
     </script>
