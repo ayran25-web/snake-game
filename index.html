@@ -55,7 +55,7 @@
         }
 
         .btn-touch:active {
-            transform: scale(0.90);
+            transform: scale(0.88);
             background-color: rgba(6, 182, 212, 0.3) !important;
         }
 
@@ -69,18 +69,23 @@
     <!-- Huvudbehållare -->
     <div class="w-full max-w-4xl flex flex-col items-center">
         
-        <!-- Titel & Header -->
-        <header class="text-center mb-1">
-            <h1 class="text-2xl sm:text-5xl font-extrabold font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 tracking-wider neon-text-cyan">
+        <!-- Titel & Header med Ljud & Paus högst upp -->
+        <header class="w-full max-w-[340px] sm:max-w-md flex justify-between items-center mb-1 px-1">
+            <h1 class="text-xl sm:text-4xl font-extrabold font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 tracking-wider neon-text-cyan">
                 NEON SNAKE
             </h1>
-            <p class="text-[10px] sm:text-sm text-slate-400">
-                Boss & Shop Edition
-            </p>
+            <div class="flex gap-1.5">
+                <button onclick="togglePause()" class="btn-arcade py-1 px-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-200 flex items-center gap-1">
+                    <i class="fa-solid fa-pause text-cyan-400 pointer-events-none"></i>
+                </button>
+                <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1 px-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-200 flex items-center gap-1">
+                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400 pointer-events-none"></i>
+                </button>
+            </div>
         </header>
 
         <!-- Poäng, Mynt & Statuspanel -->
-        <div class="w-full max-w-[340px] sm:max-w-md bg-slate-900/90 border border-slate-700/60 rounded-xl px-3 py-1.5 mb-1.5 flex justify-between items-center shadow-lg backdrop-blur-md">
+        <div class="w-full max-w-[340px] sm:max-w-md bg-slate-900/90 border border-slate-700/60 rounded-xl px-3 py-1.5 mb-1 flex justify-between items-center shadow-lg backdrop-blur-md">
             <div class="flex flex-col items-start">
                 <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Poäng</span>
                 <span id="score" class="text-lg sm:text-3xl font-arcade font-bold text-cyan-400 neon-text-cyan">0</span>
@@ -98,18 +103,16 @@
             </div>
         </div>
 
-        <!-- Indikatorer (Ghost Mode & Boss HP) -->
-        <div id="ghost-status" class="hidden w-full max-w-[340px] bg-purple-950/80 border border-purple-500 text-purple-300 text-center text-xs font-arcade py-1 rounded-lg mb-1 animate-pulse">
-            👻 GHOST MODE AKTIV
-        </div>
-
-        <div id="boss-hp-container" class="hidden w-full max-w-[340px] bg-red-950/80 border border-red-500 text-red-300 text-center text-xs font-arcade py-1.5 px-3 rounded-lg mb-1 flex flex-col gap-1">
-            <div class="flex justify-between items-center font-bold">
-                <span>⚠️ CYBER BOSS</span>
-                <span id="boss-hp-text">100/100</span>
-            </div>
-            <div class="w-full bg-slate-900 h-2 rounded-full overflow-hidden border border-red-500/50">
-                <div id="boss-hp-bar" class="bg-red-500 h-full w-full transition-all duration-150"></div>
+        <!-- Boss Hälsobar (Reserverat utrymme så att spelplanen INTE flyttar sig) -->
+        <div class="w-full max-w-[340px] h-9 mb-1 flex items-center">
+            <div id="boss-hp-container" class="hidden w-full bg-red-950/90 border border-red-500 text-red-300 text-center text-xs font-arcade py-1 px-2.5 rounded-lg flex flex-col gap-0.5">
+                <div class="flex justify-between items-center font-bold text-[10px]">
+                    <span>⚠️ CYBER BOSS (RÖR EJ!)</span>
+                    <span id="boss-hp-text">100/100</span>
+                </div>
+                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-red-500/50">
+                    <div id="boss-hp-bar" class="bg-red-500 h-full w-full transition-all duration-150"></div>
+                </div>
             </div>
         </div>
 
@@ -124,10 +127,10 @@
                     KLAR ATT SPELA?
                 </div>
                 <p id="overlay-desc" class="text-slate-300 text-[11px] sm:text-sm mb-2.5 max-w-xs">
-                    Besegra bossar, samla mynt och lås upp nya skins!
+                    Plocka blå skott för att skjuta bossen – men undvik att krocka med den!
                 </p>
 
-                <div class="w-full max-w-xs mb-2 space-y-1">
+                <div class="w-full max-w-xs mb-2.5 space-y-1">
                     <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Svårighetsgrad</label>
                     <div class="grid grid-cols-3 gap-1.5">
                         <button onclick="setSpeed('easy')" id="speed-easy" class="speed-btn px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-[11px] font-bold text-slate-300 transition">Lätt</button>
@@ -154,7 +157,6 @@
                 </div>
 
                 <div class="w-full max-w-xs space-y-2 mb-3">
-                    <!-- Skin 1 -->
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
                         <div class="flex items-center gap-2">
                             <div class="w-5 h-5 rounded-full bg-cyan-400 shadow-[0_0_8px_#22d3ee]"></div>
@@ -163,7 +165,6 @@
                         <button onclick="selectSkin('cyan')" id="skin-btn-cyan" class="px-2.5 py-1 bg-cyan-500 text-slate-950 font-bold text-[10px] rounded-lg">VALD</button>
                     </div>
 
-                    <!-- Skin 2 -->
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
                         <div class="flex items-center gap-2">
                             <div class="w-5 h-5 rounded-full bg-orange-500 shadow-[0_0_8px_#f97316]"></div>
@@ -172,7 +173,6 @@
                         <button onclick="buySkin('red', 30)" id="skin-btn-red" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[10px] rounded-lg">30 🪙</button>
                     </div>
 
-                    <!-- Skin 3 -->
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
                         <div class="flex items-center gap-2">
                             <div class="w-5 h-5 rounded-full bg-emerald-400 shadow-[0_0_8px_#34d399]"></div>
@@ -181,7 +181,6 @@
                         <button onclick="buySkin('green', 60)" id="skin-btn-green" class="px-2.5 py-1 bg-purple-600 text-white font-bold text-[10px] rounded-lg">60 🪙</button>
                     </div>
 
-                    <!-- Skin 4 -->
                     <div class="flex items-center justify-between bg-slate-900 border border-slate-800 p-2 rounded-xl">
                         <div class="flex items-center gap-2">
                             <div class="w-5 h-5 rounded-full bg-yellow-400 shadow-[0_0_8px_#facc15]"></div>
@@ -195,19 +194,9 @@
             </div>
         </div>
 
-        <!-- Paus/Ljud & Mobilkontroller -->
-        <div class="w-full max-w-[340px] sm:max-w-md mt-1.5 flex flex-col items-center gap-1">
-            <div class="flex gap-2 w-full justify-center">
-                <button onclick="togglePause()" class="btn-arcade flex-1 py-1 px-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-[11px] text-slate-200 flex items-center justify-center gap-1.5">
-                    <i class="fa-solid fa-pause text-cyan-400 pointer-events-none"></i> Paus
-                </button>
-                <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1 px-3 bg-slate-800 border border-slate-700 rounded-xl font-semibold text-[11px] text-slate-200 flex items-center justify-center gap-1.5">
-                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400 pointer-events-none"></i>
-                </button>
-            </div>
-
-            <!-- Mobilknappar -->
-            <div class="grid grid-cols-3 gap-1.5 w-52 h-28">
+        <!-- Mobilkontroller (D-Pad) -->
+        <div class="w-full max-w-[340px] sm:max-w-md mt-2 flex justify-center">
+            <div class="grid grid-cols-3 gap-1.5 w-56 h-28">
                 <div></div>
                 <button id="btn-up" class="btn-touch bg-slate-800/90 border border-cyan-500/60 rounded-xl flex items-center justify-center text-xl text-cyan-400 shadow">
                     <i class="fa-solid fa-chevron-up pointer-events-none"></i>
@@ -244,8 +233,7 @@
         let nextDirection = 'RIGHT';
         let food = { x: 0, y: 0 };
         let coinItem = null;
-        let empAmmo = null; // För att skada bossen
-        let obstacles = [];
+        let empAmmo = null;
         let score = 0;
         let coins = parseInt(localStorage.getItem('neon_snake_coins')) || 0;
         let highScore = parseInt(localStorage.getItem('neon_snake_highscore')) || 0;
@@ -257,13 +245,12 @@
         let isGameOver = false;
         let gameSpeed = 95;
         let isMuted = false;
-        let ghostModeTimer = 0;
 
         // BOSS SYSTEM
         let isBossActive = false;
         let bossHp = 100;
         let bossMaxHp = 100;
-        let bossPos = { x: 10, y: 3 };
+        let bossPos = { x: 9, y: 2 };
         let bossObstacles = [];
 
         document.getElementById('high-score').textContent = highScore;
@@ -353,7 +340,6 @@
             bossObstacles = [];
 
             document.getElementById('score').textContent = '0';
-            document.getElementById('ghost-status').classList.add('hidden');
             document.getElementById('boss-hp-container').classList.add('hidden');
             document.getElementById('game-border').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
 
@@ -419,14 +405,23 @@
             if (head.y < 0) head.y = GRID_SIZE - 1;
             if (head.y >= GRID_SIZE) head.y = 0;
 
-            // Self Collision Check
+            // Krocka med sin egen svans -> Dö
             if (snake.some(s => s.x === head.x && s.y === head.y)) {
                 return gameOver();
             }
 
-            // Boss Obstacle Collision
-            if (bossObstacles.some(o => o.x === head.x && o.y === head.y)) {
-                return gameOver();
+            // Krocka med Bossen (den röda 2x2-ytan) -> Dö!
+            if (isBossActive) {
+                const hitBossX = (head.x === bossPos.x || head.x === bossPos.x + 1);
+                const hitBossY = (head.y === bossPos.y || head.y === bossPos.y + 1);
+                if (hitBossX && hitBossY) {
+                    return gameOver();
+                }
+
+                // Krocka med bossens röda skott -> Dö!
+                if (bossObstacles.some(o => o.x === head.x && o.y === head.y)) {
+                    return gameOver();
+                }
             }
 
             snake.unshift(head);
@@ -479,7 +474,7 @@
                 snake.pop();
             }
 
-            // Boss logik: flytta bossens fällor
+            // Boss-logik: skjuta/flytta hinder
             if (isBossActive && Math.random() < 0.15) {
                 bossObstacles = [
                     { x: (bossPos.x + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE, y: (bossPos.y + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE }
@@ -493,7 +488,7 @@
             if (activeSkin === 'red') return `hsl(${10 + index * 3}, 100%, 50%)`;
             if (activeSkin === 'green') return `hsl(${130 + index * 3}, 100%, 50%)`;
             if (activeSkin === 'gold') return `hsl(${45 + index * 2}, 100%, 50%)`;
-            return `hsl(${180 + (index * 4) % 60}, 100%, 50%)`; // default Cyan
+            return `hsl(${180 + (index * 4) % 60}, 100%, 50%)`;
         }
 
         function draw() {
@@ -513,7 +508,7 @@
                 ctx.stroke();
             }
 
-            // Rita Boss
+            // Rita Boss (2x2 rutor)
             if (isBossActive) {
                 ctx.fillStyle = '#ef4444';
                 ctx.shadowColor = '#ef4444';
@@ -528,7 +523,7 @@
                 });
             }
 
-            // EMP Ammo för Boss
+            // EMP Skott för Boss
             if (empAmmo) {
                 ctx.fillStyle = '#38bdf8';
                 ctx.shadowColor = '#38bdf8';
@@ -616,7 +611,6 @@
             }
         }
 
-        // SHOP FUNKTIONER
         function openShop() {
             updateShopUI();
             document.getElementById('shop-overlay').classList.remove('hidden');
