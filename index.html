@@ -3,41 +3,33 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Gravity Thief - Neon Runner</title>
+    <title>Temple Relic Runner</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
-        @import url('https://fonts.googleapis.com/css2?family=Orbitron:wght@400;700;900&family=Inter:wght@400;600;800&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@600;800&family=Inter:wght@400;600&display=swap');
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #080911;
+            background-color: #120e0a;
             color: #f1f5f9;
             touch-action: none;
             user-select: none;
             -webkit-user-select: none;
         }
 
-        .font-arcade {
-            font-family: 'Orbitron', sans-serif;
+        .font-temple {
+            font-family: 'Cinzel', serif;
         }
 
-        .neon-glow-cyan {
-            box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.2);
+        .gold-glow {
+            box-shadow: 0 0 20px rgba(234, 179, 8, 0.3), inset 0 0 10px rgba(234, 179, 8, 0.1);
         }
 
-        .neon-text-cyan {
-            text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
-        }
-
-        .neon-text-gold {
-            text-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
-        }
-
-        .neon-text-pink {
-            text-shadow: 0 0 10px rgba(236, 72, 153, 0.8);
+        .gold-text {
+            text-shadow: 0 0 10px rgba(234, 179, 8, 0.6);
         }
 
         .btn-arcade {
@@ -61,55 +53,55 @@
         <!-- Header -->
         <header class="w-full flex justify-between items-center mb-2 px-1">
             <div>
-                <h1 class="text-2xl sm:text-4xl font-black font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 tracking-wider neon-text-cyan">
-                    GRAVITY THIEF
+                <h1 class="text-2xl sm:text-3xl font-extrabold font-temple text-amber-400 tracking-wider gold-text">
+                    TEMPLE RELIC RUNNER
                 </h1>
-                <p class="text-[10px] sm:text-xs text-slate-400">
-                    Tryck på skärmen för att <span class="text-cyan-400 font-bold">växla tyngdkraft</span>!
+                <p class="text-[10px] sm:text-xs text-amber-200/60">
+                    Tryck <span class="text-amber-400 font-bold">Överst</span> för Hopp | <span class="text-amber-400 font-bold">Nederst</span> för Glid
                 </p>
             </div>
-            <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1.5 px-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 flex items-center gap-1.5 shadow">
-                <i id="sound-icon" class="fa-solid fa-volume-high text-cyan-400 pointer-events-none"></i>
+            <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1.5 px-3 bg-amber-950/80 border border-amber-600/50 rounded-xl text-xs text-amber-200 flex items-center gap-1.5 shadow">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-amber-400 pointer-events-none"></i>
             </button>
         </header>
 
-        <!-- Poäng, Mynt & Rekord -->
-        <div class="w-full bg-slate-900/90 border border-slate-700/60 rounded-xl px-4 py-2 mb-2 flex justify-between items-center shadow-lg backdrop-blur-md">
+        <!-- Poäng & Skatter Statuspanel -->
+        <div class="w-full bg-stone-900/90 border border-amber-900/40 rounded-xl px-4 py-2 mb-2 flex justify-between items-center shadow-lg backdrop-blur-md">
             <div class="flex flex-col items-start">
-                <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Distans</span>
-                <span id="score" class="text-xl sm:text-2xl font-arcade font-bold text-cyan-400 neon-text-cyan">0m</span>
+                <span class="text-[9px] text-amber-500/80 font-semibold uppercase tracking-wider">Distans</span>
+                <span id="score" class="text-xl sm:text-2xl font-temple font-bold text-amber-300">0m</span>
             </div>
 
             <div class="flex flex-col items-center">
-                <span class="text-[9px] text-yellow-400 font-semibold uppercase tracking-wider">Skatter</span>
+                <span class="text-[9px] text-amber-500/80 font-semibold uppercase tracking-wider">Skatter</span>
                 <div class="flex items-center gap-1">
-                    <i class="fa-solid fa-gem text-yellow-400 text-xs"></i>
-                    <span id="gems" class="text-xl sm:text-2xl font-arcade font-bold text-yellow-400 neon-text-gold">0</span>
+                    <i class="fa-solid fa-gem text-amber-400 text-xs"></i>
+                    <span id="treasures" class="text-xl sm:text-2xl font-temple font-bold text-amber-400 gold-text">0</span>
                 </div>
             </div>
 
             <div class="flex flex-col items-end">
-                <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Rekord</span>
-                <span id="high-score" class="text-xl sm:text-2xl font-arcade font-bold text-pink-500 neon-text-pink">0m</span>
+                <span class="text-[9px] text-amber-500/80 font-semibold uppercase tracking-wider">Rekord</span>
+                <span id="high-score" class="text-xl sm:text-2xl font-temple font-bold text-amber-500">0m</span>
             </div>
         </div>
 
         <!-- Spelyta Canvas -->
-        <div id="game-container" class="relative w-full aspect-[4/3] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center cursor-pointer">
+        <div id="game-container" class="relative w-full aspect-[4/3] bg-stone-950 rounded-2xl overflow-hidden border-2 border-amber-600/40 gold-glow shadow-2xl flex items-center justify-center cursor-pointer">
             
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
             <!-- Start / Game Over Overlay -->
-            <div id="overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center z-10 transition-all duration-300">
-                <div id="overlay-title" class="text-2xl sm:text-4xl font-arcade font-black text-cyan-400 mb-2 neon-text-cyan">
-                    GRAVITY THIEF
+            <div id="overlay" class="absolute inset-0 bg-stone-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center z-10 transition-all duration-300">
+                <div id="overlay-title" class="text-2xl sm:text-4xl font-temple font-black text-amber-400 mb-2 gold-text">
+                    TEMPLE RELIC RUNNER
                 </div>
-                <p id="overlay-desc" class="text-slate-300 text-xs sm:text-sm mb-4 max-w-xs leading-relaxed">
-                    Undvik röda laserhinder genom att skifta tyngdkraften mellan golv och tak!
+                <p id="overlay-desc" class="text-amber-200/80 text-xs sm:text-sm mb-4 max-w-xs leading-relaxed">
+                    Fly ur det rasande templet! Hoppa över spikar och glid under stenväggarna.
                 </p>
 
-                <button id="start-btn" onclick="startGame()" class="btn-arcade w-full max-w-xs py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-arcade font-black text-base rounded-xl shadow-lg border border-cyan-300 cursor-pointer tracking-wider">
-                    STARTA SPRANGET
+                <button id="start-btn" onclick="startGame()" class="btn-arcade w-full max-w-xs py-3 px-6 bg-gradient-to-r from-amber-600 to-yellow-600 hover:from-amber-500 hover:to-yellow-500 text-stone-950 font-temple font-black text-base rounded-xl shadow-lg border border-amber-300 cursor-pointer tracking-wider">
+                    BÖRJA ÄVENTYRET
                 </button>
             </div>
         </div>
@@ -126,36 +118,39 @@
         canvas.width = CANVAS_WIDTH;
         canvas.height = CANVAS_HEIGHT;
 
-        const GROUND_Y = 380;
-        const CEILING_Y = 70;
-        const PLAYER_SIZE = 28;
+        const GROUND_Y = 370;
+        const PLAYER_WIDTH = 26;
+        const PLAYER_NORMAL_HEIGHT = 44;
+        const PLAYER_SLIDE_HEIGHT = 22;
 
         let isRunning = false;
         let isGameOver = false;
         let score = 0;
-        let gems = parseInt(localStorage.getItem('gt_gems')) || 0;
-        let highScore = parseInt(localStorage.getItem('gt_highscore')) || 0;
-        let gameSpeed = 5;
+        let treasures = parseInt(localStorage.getItem('tr_treasures')) || 0;
+        let highScore = parseInt(localStorage.getItem('tr_highscore')) || 0;
+        let gameSpeed = 5.5;
         let isMuted = false;
 
-        // Spelaren
+        // Spelaren (Äventyraren)
         let player = {
-            x: 80,
-            y: GROUND_Y - PLAYER_SIZE,
-            targetY: GROUND_Y - PLAYER_SIZE,
+            x: 90,
+            y: GROUND_Y - PLAYER_NORMAL_HEIGHT,
             vy: 0,
-            isGravityInverted: false, // false = golv, true = tak
-            trail: []
+            width: PLAYER_WIDTH,
+            height: PLAYER_NORMAL_HEIGHT,
+            isJumping: false,
+            isSliding: false,
+            slideTimer: 0
         };
 
-        // Objekt & Hinder
+        // Hinder och skatter
         let obstacles = [];
-        let gemItems = [];
+        let relics = [];
         let particles = [];
         let spawnTimer = 0;
 
         document.getElementById('high-score').textContent = `${highScore}m`;
-        document.getElementById('gems').textContent = gems;
+        document.getElementById('treasures').textContent = treasures;
 
         // Ljudsystem (Web Audio API)
         const AudioContext = window.AudioContext || window.webkitAudioContext;
@@ -177,26 +172,34 @@
             gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
 
-            if (type === 'flip') {
-                osc.type = 'sine';
-                osc.frequency.setValueAtTime(player.isGravityInverted ? 300 : 500, now);
-                osc.frequency.exponentialRampToValueAtTime(player.isGravityInverted ? 600 : 250, now + 0.1);
-                gain.gain.setValueAtTime(0.15, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
-                osc.start(now);
-                osc.stop(now + 0.1);
-            } else if (type === 'gem') {
+            if (type === 'jump') {
                 osc.type = 'triangle';
-                osc.frequency.setValueAtTime(600, now);
-                osc.frequency.setValueAtTime(900, now + 0.08);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
+                osc.frequency.setValueAtTime(250, now);
+                osc.frequency.exponentialRampToValueAtTime(500, now + 0.15);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
                 osc.start(now);
-                osc.stop(now + 0.18);
+                osc.stop(now + 0.15);
+            } else if (type === 'slide') {
+                osc.type = 'sine';
+                osc.frequency.setValueAtTime(180, now);
+                osc.frequency.linearRampToValueAtTime(100, now + 0.12);
+                gain.gain.setValueAtTime(0.15, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.12);
+                osc.start(now);
+                osc.stop(now + 0.12);
+            } else if (type === 'relic') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(580, now);
+                osc.frequency.setValueAtTime(880, now + 0.08);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.2);
+                osc.start(now);
+                osc.stop(now + 0.2);
             } else if (type === 'hit') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(200, now);
-                osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
+                osc.frequency.setValueAtTime(150, now);
+                osc.frequency.exponentialRampToValueAtTime(30, now + 0.35);
                 gain.gain.setValueAtTime(0.3, now);
                 gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
                 osc.start(now);
@@ -207,27 +210,29 @@
         function toggleMute() {
             isMuted = !isMuted;
             document.getElementById('sound-icon').className = isMuted 
-                ? 'fa-solid fa-volume-xmark text-slate-500 pointer-events-none' 
-                : 'fa-solid fa-volume-high text-cyan-400 pointer-events-none';
+                ? 'fa-solid fa-volume-xmark text-amber-700 pointer-events-none' 
+                : 'fa-solid fa-volume-high text-amber-400 pointer-events-none';
         }
 
-        function flipGravity() {
+        function playerJump() {
             if (!isRunning || isGameOver) return;
-            initAudio();
-            player.isGravityInverted = !player.isGravityInverted;
-            playSound('flip');
+            if (!player.isJumping && !player.isSliding) {
+                player.vy = -11.5;
+                player.isJumping = true;
+                player.isSliding = false;
+                player.height = PLAYER_NORMAL_HEIGHT;
+                playSound('jump');
+            }
+        }
 
-            // Skapa partiklar vid vändning
-            for (let i = 0; i < 10; i++) {
-                particles.push({
-                    x: player.x + PLAYER_SIZE / 2,
-                    y: player.y + PLAYER_SIZE / 2,
-                    vx: (Math.random() - 0.5) * 4,
-                    vy: (Math.random() - 0.5) * 4,
-                    size: Math.random() * 4 + 2,
-                    color: '#22d3ee',
-                    life: 1
-                });
+        function playerSlide() {
+            if (!isRunning || isGameOver) return;
+            if (!player.isJumping) {
+                player.isSliding = true;
+                player.height = PLAYER_SLIDE_HEIGHT;
+                player.y = GROUND_Y - PLAYER_SLIDE_HEIGHT;
+                player.slideTimer = 35; // Antal frames man glider
+                playSound('slide');
             }
         }
 
@@ -236,16 +241,17 @@
             isRunning = true;
             isGameOver = false;
             score = 0;
-            gameSpeed = 6;
+            gameSpeed = 5.5;
             obstacles = [];
-            gemItems = [];
+            relics = [];
             particles = [];
             spawnTimer = 0;
 
-            player.isGravityInverted = false;
-            player.y = GROUND_Y - PLAYER_SIZE;
+            player.y = GROUND_Y - PLAYER_NORMAL_HEIGHT;
             player.vy = 0;
-            player.trail = [];
+            player.isJumping = false;
+            player.isSliding = false;
+            player.height = PLAYER_NORMAL_HEIGHT;
 
             document.getElementById('score').textContent = '0m';
             document.getElementById('overlay').classList.add('hidden');
@@ -253,30 +259,38 @@
             requestAnimationFrame(gameLoop);
         }
 
-        function spawnObstacleOrGem() {
+        function spawnObstacleOrRelic() {
             spawnTimer++;
-            if (spawnTimer > Math.max(35, 70 - Math.floor(score / 50))) {
+            if (spawnTimer > Math.max(40, 75 - Math.floor(score / 40))) {
                 spawnTimer = 0;
 
-                const isCeiling = Math.random() < 0.5;
                 const type = Math.random();
 
-                if (type < 0.7) {
-                    // Skapa hinder
-                    const h = Math.random() * 40 + 40;
+                if (type < 0.55) {
+                    // Markhinder (Spikar / Stenblock att hoppa över)
                     obstacles.push({
-                        x: CANVAS_WIDTH + 20,
-                        y: isCeiling ? CEILING_Y : GROUND_Y - h,
-                        w: 24,
-                        h: h,
-                        isCeiling: isCeiling
+                        x: CANVAS_WIDTH + 30,
+                        y: GROUND_Y - 32,
+                        w: 30,
+                        h: 32,
+                        type: 'spike'
+                    });
+                } else if (type < 0.8) {
+                    // Högt hinder (Stenvägg att glida under)
+                    obstacles.push({
+                        x: CANVAS_WIDTH + 30,
+                        y: GROUND_Y - 75,
+                        w: 35,
+                        h: 45,
+                        type: 'wall'
                     });
                 } else {
-                    // Skapa Ädelsten
-                    gemItems.push({
-                        x: CANVAS_WIDTH + 20,
-                        y: isCeiling ? CEILING_Y + 15 : GROUND_Y - 35,
-                        size: 16
+                    // Skatt / Relik att plocka
+                    const high = Math.random() < 0.5;
+                    relics.push({
+                        x: CANVAS_WIDTH + 30,
+                        y: high ? GROUND_Y - 80 : GROUND_Y - 35,
+                        size: 18
                     });
                 }
             }
@@ -285,116 +299,129 @@
         function update() {
             if (!isRunning || isGameOver) return;
 
-            score += 0.2;
+            score += 0.25;
             document.getElementById('score').textContent = `${Math.floor(score)}m`;
 
-            // Öka hastigheten gradvis
-            if (gameSpeed < 13) gameSpeed += 0.0015;
+            // Gradvis fartökning
+            if (gameSpeed < 12) gameSpeed += 0.0015;
 
-            // Spelarens Tyngdkraft & Rörelse
-            const targetY = player.isGravityInverted ? CEILING_Y : GROUND_Y - PLAYER_SIZE;
-            player.y += (targetY - player.y) * 0.22;
+            // Fysik för hopp
+            if (player.isJumping) {
+                player.y += player.vy;
+                player.vy += 0.65; // Gravitation
 
-            // Trail-effekt
-            player.trail.unshift({ x: player.x, y: player.y });
-            if (player.trail.length > 5) player.trail.pop();
-
-            // Hantera Partiklar
-            for (let i = particles.length - 1; i >= 0; i--) {
-                let p = particles[i];
-                p.x += p.vx;
-                p.y += p.vy;
-                p.life -= 0.04;
-                if (p.life <= 0) particles.splice(i, 1);
+                // Landning på marken
+                if (player.y >= GROUND_Y - PLAYER_NORMAL_HEIGHT) {
+                    player.y = GROUND_Y - PLAYER_NORMAL_HEIGHT;
+                    player.isJumping = false;
+                    player.vy = 0;
+                }
             }
 
-            spawnObstacleOrGem();
+            // Timer för glidning
+            if (player.isSliding) {
+                player.slideTimer--;
+                if (player.slideTimer <= 0) {
+                    player.isSliding = false;
+                    player.height = PLAYER_NORMAL_HEIGHT;
+                    player.y = GROUND_Y - PLAYER_NORMAL_HEIGHT;
+                }
+            }
+
+            spawnObstacleOrRelic();
 
             // Uppdatera Hinder
             for (let i = obstacles.length - 1; i >= 0; i--) {
                 let obs = obstacles[i];
                 obs.x -= gameSpeed;
 
-                // Kollision med spelaren
+                // AABB Kollisionskontroll
                 if (
-                    player.x < obs.x + obs.w &&
-                    player.x + PLAYER_SIZE > obs.x &&
-                    player.y < obs.y + obs.h &&
-                    player.y + PLAYER_SIZE > obs.y
+                    player.x < obs.x + obs.w - 4 &&
+                    player.x + player.width > obs.x + 4 &&
+                    player.y < obs.y + obs.h - 4 &&
+                    player.y + player.height > obs.y + 4
                 ) {
                     gameOver();
                     return;
                 }
 
-                if (obs.x + obs.w < -20) obstacles.splice(i, 1);
+                if (obs.x + obs.w < -30) obstacles.splice(i, 1);
             }
 
-            // Uppdatera Skatter
-            for (let i = gemItems.length - 1; i >= 0; i--) {
-                let gem = gemItems[i];
-                gem.x -= gameSpeed;
+            // Uppdatera Skatter/Reliker
+            for (let i = relics.length - 1; i >= 0; i--) {
+                let relic = relics[i];
+                relic.x -= gameSpeed;
 
-                // Plocka upp ädelsten
                 if (
-                    player.x < gem.x + gem.size &&
-                    player.x + PLAYER_SIZE > gem.x &&
-                    player.y < gem.y + gem.size &&
-                    player.y + PLAYER_SIZE > gem.y
+                    player.x < relic.x + relic.size &&
+                    player.x + player.width > relic.x &&
+                    player.y < relic.y + relic.size &&
+                    player.y + player.height > relic.y
                 ) {
-                    gems += 1;
-                    localStorage.setItem('gt_gems', gems);
-                    document.getElementById('gems').textContent = gems;
-                    playSound('gem');
+                    treasures += 1;
+                    localStorage.setItem('tr_treasures', treasures);
+                    document.getElementById('treasures').textContent = treasures;
+                    playSound('relic');
 
                     // Guldpartiklar
-                    for (let j = 0; j < 8; j++) {
+                    for (let j = 0; j < 6; j++) {
                         particles.push({
-                            x: gem.x,
-                            y: gem.y,
-                            vx: (Math.random() - 0.5) * 5,
-                            vy: (Math.random() - 0.5) * 5,
+                            x: relic.x,
+                            y: relic.y,
+                            vx: (Math.random() - 0.5) * 4,
+                            vy: (Math.random() - 0.5) * 4,
                             size: 3,
-                            color: '#facc15',
+                            color: '#eab308',
                             life: 1
                         });
                     }
 
-                    gemItems.splice(i, 1);
-                } else if (gem.x < -20) {
-                    gemItems.splice(i, 1);
+                    relics.splice(i, 1);
+                } else if (relic.x < -30) {
+                    relics.splice(i, 1);
                 }
+            }
+
+            // Uppdatera partiklar
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.05;
+                if (p.life <= 0) particles.splice(i, 1);
             }
         }
 
         function draw() {
-            // Bakgrund
-            ctx.fillStyle = '#080911';
+            // Bakgrund (Stenmur med facklor)
+            ctx.fillStyle = '#1c140f';
             ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            // Rita Tak & Golv med Neon-glöd
-            ctx.fillStyle = '#1e293b';
-            ctx.fillRect(0, 0, CANVAS_WIDTH, CEILING_Y);
+            // Tempel-pelare / bakgrundsdetaljer i parallax
+            ctx.fillStyle = '#291e17';
+            let bgOffset = (score * 2) % 100;
+            for (let i = -1; i < CANVAS_WIDTH / 100 + 2; i++) {
+                let x = i * 100 - bgOffset;
+                ctx.fillRect(x, 50, 40, GROUND_Y - 50);
+            }
+
+            // Stengolv
+            ctx.fillStyle = '#3a2d24';
             ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
 
-            ctx.strokeStyle = '#22d3ee';
+            ctx.strokeStyle = '#eab308';
             ctx.lineWidth = 3;
-            ctx.shadowColor = '#22d3ee';
-            ctx.shadowBlur = 10;
-
-            // Golvlinje
+            ctx.shadowColor = '#eab308';
+            ctx.shadowBlur = 8;
             ctx.beginPath();
             ctx.moveTo(0, GROUND_Y);
             ctx.lineTo(CANVAS_WIDTH, GROUND_Y);
             ctx.stroke();
-
-            // Taklinje
-            ctx.beginPath();
-            ctx.moveTo(0, CEILING_Y);
-            ctx.lineTo(CANVAS_WIDTH, CEILING_Y);
-            ctx.stroke();
             ctx.shadowBlur = 0;
 
-            // Rita Partiklar
+            // Rita partiklar
             particles.forEach(p => {
                 ctx.fillStyle = p.color;
                 ctx.globalAlpha = p.life;
@@ -402,45 +429,48 @@
             });
             ctx.globalAlpha = 1.0;
 
-            // Rita Trail
-            player.trail.forEach((t, index) => {
-                ctx.fillStyle = `rgba(34, 211, 238, ${0.4 - index * 0.08})`;
-                ctx.fillRect(t.x, t.y, PLAYER_SIZE, PLAYER_SIZE);
-            });
+            // Rita Spelaren (Äventyraren med hatt)
+            ctx.fillStyle = '#d97706'; // Jacka/Tröja
+            ctx.fillRect(player.x, player.y, player.width, player.height);
 
-            // Rita Spelaren (Neon-kub med inre kärna)
-            ctx.fillStyle = '#ec4899';
-            ctx.shadowColor = '#ec4899';
-            ctx.shadowBlur = 12;
-            ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
-            ctx.shadowBlur = 0;
+            // Ansikte / Hatt
+            ctx.fillStyle = '#fbbf24';
+            ctx.fillRect(player.x + 4, player.y + 4, player.width - 8, 12);
 
-            ctx.fillStyle = '#ffffff';
-            ctx.fillRect(player.x + 6, player.y + 6, PLAYER_SIZE - 12, PLAYER_SIZE - 12);
-
-            // Rita Hinder (Röda Lasrar)
+            // Rita Hinder
             obstacles.forEach(obs => {
-                ctx.fillStyle = '#ef4444';
-                ctx.shadowColor = '#ef4444';
-                ctx.shadowBlur = 12;
-                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
-                ctx.shadowBlur = 0;
-
-                // Laser-mönster i mitten
-                ctx.fillStyle = '#fca5a5';
-                ctx.fillRect(obs.x + 4, obs.y, obs.w - 8, obs.h);
+                if (obs.type === 'spike') {
+                    // Spikar på marken
+                    ctx.fillStyle = '#ef4444';
+                    ctx.shadowColor = '#ef4444';
+                    ctx.shadowBlur = 6;
+                    ctx.beginPath();
+                    ctx.moveTo(obs.x, obs.y + obs.h);
+                    ctx.lineTo(obs.x + obs.w / 2, obs.y);
+                    ctx.lineTo(obs.x + obs.w, obs.y + obs.h);
+                    ctx.closePath();
+                    ctx.fill();
+                    ctx.shadowBlur = 0;
+                } else {
+                    // Stenvägg / Block att glida under
+                    ctx.fillStyle = '#78716c';
+                    ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
+                    ctx.strokeStyle = '#44403c';
+                    ctx.lineWidth = 2;
+                    ctx.strokeRect(obs.x, obs.y, obs.w, obs.h);
+                }
             });
 
-            // Rita Skatter (Gula diamanter)
-            gemItems.forEach(gem => {
-                ctx.fillStyle = '#facc15';
-                ctx.shadowColor = '#facc15';
-                ctx.shadowBlur = 10;
+            // Rita Skatter / Reliker (Gyllene diamant)
+            relics.forEach(relic => {
+                ctx.fillStyle = '#eab308';
+                ctx.shadowColor = '#eab308';
+                ctx.shadowBlur = 12;
                 ctx.beginPath();
-                ctx.moveTo(gem.x + gem.size / 2, gem.y);
-                ctx.lineTo(gem.x + gem.size, gem.y + gem.size / 2);
-                ctx.lineTo(gem.x + gem.size / 2, gem.y + gem.size);
-                ctx.lineTo(gem.x, gem.y + gem.size / 2);
+                ctx.moveTo(relic.x + relic.size / 2, relic.y);
+                ctx.lineTo(relic.x + relic.size, relic.y + relic.size / 2);
+                ctx.lineTo(relic.x + relic.size / 2, relic.y + relic.size);
+                ctx.lineTo(relic.x, relic.y + relic.size / 2);
                 ctx.closePath();
                 ctx.fill();
                 ctx.shadowBlur = 0;
@@ -455,15 +485,15 @@
             const finalScore = Math.floor(score);
             if (finalScore > highScore) {
                 highScore = finalScore;
-                localStorage.setItem('gt_highscore', highScore);
+                localStorage.setItem('tr_highscore', highScore);
                 document.getElementById('high-score').textContent = `${highScore}m`;
             }
 
             const overlay = document.getElementById('overlay');
-            document.getElementById('overlay-title').textContent = 'GAME OVER';
-            document.getElementById('overlay-title').className = 'text-2xl sm:text-4xl font-arcade font-black text-pink-500 mb-2 neon-text-pink';
-            document.getElementById('overlay-desc').textContent = `Du sprang ${finalScore} meter och samlade ${gems} ädelstenar!`;
-            document.getElementById('start-btn').textContent = 'SPELA IGEN';
+            document.getElementById('overlay-title').textContent = 'FÅNGAD AV TEMplet!';
+            document.getElementById('overlay-title').className = 'text-2xl sm:text-4xl font-temple font-black text-rose-500 mb-2';
+            document.getElementById('overlay-desc').textContent = `Du flydde ${finalScore} meter och räddade ${treasures} skatter!`;
+            document.getElementById('start-btn').textContent = 'FÖRSÖK IGEN';
             overlay.classList.remove('hidden');
         }
 
@@ -475,17 +505,30 @@
             }
         }
 
-        // Event-lyssnare
+        // Touch & Klick-kontroller (Översta halvan = hopp, Nedersta halvan = glid)
         const gameContainer = document.getElementById('game-container');
         gameContainer.addEventListener('pointerdown', (e) => {
             e.preventDefault();
-            flipGravity();
+            if (!isRunning || isGameOver) return;
+
+            const rect = gameContainer.getBoundingClientRect();
+            const clickY = e.clientY - rect.top;
+
+            if (clickY < rect.height / 2) {
+                playerJump();
+            } else {
+                playerSlide();
+            }
         });
 
+        // Tangentbordskontroller för dator (Mellanslag/Pil upp = Hopp, Pil ner = Glid)
         window.addEventListener('keydown', (e) => {
             if (e.code === 'Space' || e.code === 'ArrowUp') {
                 e.preventDefault();
-                flipGravity();
+                playerJump();
+            } else if (e.code === 'ArrowDown') {
+                e.preventDefault();
+                playerSlide();
             }
         });
 
