@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
-    <title>Supercharged Neon Snake - Arcade Edition</title>
+    <title>Gravity Thief - Neon Runner</title>
     <!-- Tailwind CSS -->
     <script src="https://cdn.tailwindcss.com"></script>
     <!-- FontAwesome -->
@@ -13,7 +13,7 @@
 
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0d0f18;
+            background-color: #080911;
             color: #f1f5f9;
             touch-action: none;
             user-select: none;
@@ -28,35 +28,24 @@
             box-shadow: 0 0 20px rgba(6, 182, 212, 0.4), inset 0 0 10px rgba(6, 182, 212, 0.2);
         }
 
-        .neon-glow-red {
-            box-shadow: 0 0 20px rgba(239, 68, 68, 0.6), inset 0 0 10px rgba(239, 68, 68, 0.3);
+        .neon-text-cyan {
+            text-shadow: 0 0 10px rgba(6, 182, 212, 0.8);
         }
 
-        .neon-text-cyan {
-            text-shadow: 0 0 8px rgba(6, 182, 212, 0.7);
+        .neon-text-gold {
+            text-shadow: 0 0 10px rgba(250, 204, 21, 0.8);
         }
 
         .neon-text-pink {
-            text-shadow: 0 0 8px rgba(236, 72, 153, 0.7);
-        }
-
-        .neon-text-purple {
-            text-shadow: 0 0 10px rgba(168, 85, 247, 0.8);
+            text-shadow: 0 0 10px rgba(236, 72, 153, 0.8);
         }
 
         .btn-arcade {
             transition: all 0.15s ease-in-out;
         }
 
-        .btn-touch {
-            touch-action: manipulation;
-            -webkit-tap-highlight-color: transparent;
-            cursor: pointer;
-        }
-
-        .btn-touch:active {
-            transform: scale(0.85);
-            background-color: rgba(6, 182, 212, 0.4) !important;
+        .btn-arcade:active {
+            transform: scale(0.95);
         }
 
         canvas {
@@ -67,128 +56,60 @@
 <body class="min-h-screen flex flex-col items-center justify-start py-2 px-2 select-none">
 
     <!-- Huvudbehållare -->
-    <div class="w-full max-w-4xl flex flex-col items-center">
+    <div class="w-full max-w-lg flex flex-col items-center">
         
-        <!-- Titel & Header med Ljud & Paus högst upp -->
-        <header class="w-full max-w-[340px] sm:max-w-md flex justify-between items-center mb-1 px-1">
-            <h1 class="text-xl sm:text-4xl font-extrabold font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-pink-500 to-purple-500 tracking-wider neon-text-cyan">
-                NEON SNAKE
-            </h1>
-            <div class="flex gap-1.5">
-                <button onclick="togglePause()" class="btn-arcade py-1 px-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-200 flex items-center gap-1">
-                    <i class="fa-solid fa-pause text-cyan-400 pointer-events-none"></i>
-                </button>
-                <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1 px-2.5 bg-slate-800 border border-slate-700 rounded-lg text-xs text-slate-200 flex items-center gap-1">
-                    <i id="sound-icon" class="fa-solid fa-volume-high text-pink-400 pointer-events-none"></i>
-                </button>
+        <!-- Header -->
+        <header class="w-full flex justify-between items-center mb-2 px-1">
+            <div>
+                <h1 class="text-2xl sm:text-4xl font-black font-arcade text-transparent bg-clip-text bg-gradient-to-r from-cyan-400 via-purple-500 to-pink-500 tracking-wider neon-text-cyan">
+                    GRAVITY THIEF
+                </h1>
+                <p class="text-[10px] sm:text-xs text-slate-400">
+                    Tryck på skärmen för att <span class="text-cyan-400 font-bold">växla tyngdkraft</span>!
+                </p>
             </div>
+            <button id="sound-btn" onclick="toggleMute()" class="btn-arcade py-1.5 px-3 bg-slate-800 border border-slate-700 rounded-xl text-xs text-slate-200 flex items-center gap-1.5 shadow">
+                <i id="sound-icon" class="fa-solid fa-volume-high text-cyan-400 pointer-events-none"></i>
+            </button>
         </header>
 
-        <!-- Poäng, Mynt & Statuspanel -->
-        <div class="w-full max-w-[340px] sm:max-w-md bg-slate-900/90 border border-slate-700/60 rounded-xl px-3 py-1.5 mb-1 flex justify-between items-center shadow-lg backdrop-blur-md">
+        <!-- Poäng, Mynt & Rekord -->
+        <div class="w-full bg-slate-900/90 border border-slate-700/60 rounded-xl px-4 py-2 mb-2 flex justify-between items-center shadow-lg backdrop-blur-md">
             <div class="flex flex-col items-start">
-                <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Poäng</span>
-                <span id="score" class="text-lg sm:text-3xl font-arcade font-bold text-cyan-400 neon-text-cyan">0</span>
+                <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Distans</span>
+                <span id="score" class="text-xl sm:text-2xl font-arcade font-bold text-cyan-400 neon-text-cyan">0m</span>
             </div>
 
-            <!-- Guldbonus Timer -->
-            <div id="bonus-timer-container" class="hidden flex flex-col items-center">
-                <span class="text-[8px] text-yellow-400 font-bold uppercase animate-pulse">GULDBONUS!</span>
-                <div class="w-16 bg-slate-800 h-1.5 rounded-full overflow-hidden mt-0.5 border border-yellow-500/40">
-                    <div id="bonus-timer-bar" class="bg-yellow-400 h-full w-full transition-all duration-100"></div>
-                </div>
-            </div>
-
-            <!-- Mynträknare -->
             <div class="flex flex-col items-center">
-                <span class="text-[9px] text-purple-400 font-semibold uppercase tracking-wider">Mynt</span>
-                <span id="coins" class="text-lg sm:text-2xl font-arcade font-bold text-purple-400 neon-text-purple">0</span>
+                <span class="text-[9px] text-yellow-400 font-semibold uppercase tracking-wider">Skatter</span>
+                <div class="flex items-center gap-1">
+                    <i class="fa-solid fa-gem text-yellow-400 text-xs"></i>
+                    <span id="gems" class="text-xl sm:text-2xl font-arcade font-bold text-yellow-400 neon-text-gold">0</span>
+                </div>
             </div>
 
             <div class="flex flex-col items-end">
                 <span class="text-[9px] text-slate-400 font-semibold uppercase tracking-wider">Rekord</span>
-                <span id="high-score" class="text-lg sm:text-3xl font-arcade font-bold text-pink-500 neon-text-pink">0</span>
+                <span id="high-score" class="text-xl sm:text-2xl font-arcade font-bold text-pink-500 neon-text-pink">0m</span>
             </div>
         </div>
 
-        <!-- Boss Hälsobar -->
-        <div class="w-full max-w-[340px] h-9 mb-1 flex items-center">
-            <div id="boss-hp-container" class="hidden w-full bg-red-950/90 border border-red-500 text-red-300 text-center text-xs font-arcade py-1 px-2.5 rounded-lg flex flex-col gap-0.5">
-                <div class="flex justify-between items-center font-bold text-[10px]">
-                    <span>⚠️ CYBER BOSS</span>
-                    <span id="boss-hp-text">100/100</span>
-                </div>
-                <div class="w-full bg-slate-900 h-1.5 rounded-full overflow-hidden border border-red-500/50">
-                    <div id="boss-hp-bar" class="bg-red-500 h-full w-full transition-all duration-150"></div>
-                </div>
-            </div>
-        </div>
-
-        <!-- Spelyta med Canvas & Overlay -->
-        <div id="touch-area" class="relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center">
+        <!-- Spelyta Canvas -->
+        <div id="game-container" class="relative w-full aspect-[4/3] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center cursor-pointer">
             
             <canvas id="gameCanvas" class="w-full h-full block"></canvas>
 
-            <!-- Meny & Pause/Game Over Overlay -->
-            <div id="overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-3 text-center z-10 transition-all duration-300">
-                <div id="overlay-title" class="text-xl sm:text-4xl font-arcade font-black text-cyan-400 mb-1 neon-text-cyan">
-                    KLAR ATT SPELA?
+            <!-- Start / Game Over Overlay -->
+            <div id="overlay" class="absolute inset-0 bg-slate-950/90 backdrop-blur-md flex flex-col items-center justify-center p-4 text-center z-10 transition-all duration-300">
+                <div id="overlay-title" class="text-2xl sm:text-4xl font-arcade font-black text-cyan-400 mb-2 neon-text-cyan">
+                    GRAVITY THIEF
                 </div>
-                <p id="overlay-desc" class="text-slate-300 text-[11px] sm:text-sm mb-2.5 max-w-xs">
-                    Svipa på spelplanen eller använd knapparna!
+                <p id="overlay-desc" class="text-slate-300 text-xs sm:text-sm mb-4 max-w-xs leading-relaxed">
+                    Undvik röda laserhinder genom att skifta tyngdkraften mellan golv och tak!
                 </p>
 
-                <div class="w-full max-w-xs mb-2.5 space-y-1">
-                    <label class="block text-[10px] font-semibold text-slate-400 uppercase tracking-wider">Svårighetsgrad</label>
-                    <div class="grid grid-cols-3 gap-1.5">
-                        <button onclick="setSpeed('easy')" id="speed-easy" class="speed-btn px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-[11px] font-bold text-slate-300 transition">Lätt</button>
-                        <button onclick="setSpeed('medium')" id="speed-medium" class="speed-btn px-2 py-1 rounded-lg border border-cyan-500 bg-cyan-950/50 text-[11px] font-bold text-cyan-400 transition">Medium</button>
-                        <button onclick="setSpeed('hard')" id="speed-hard" class="speed-btn px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-[11px] font-bold text-slate-300 transition">Blixt</button>
-                    </div>
-                </div>
-
-                <div class="flex gap-2 w-full max-w-xs">
-                    <button id="start-btn" onclick="startGame()" class="btn-arcade flex-1 py-2 px-3 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-arcade font-bold text-sm rounded-xl shadow-lg border border-cyan-300 cursor-pointer">
-                        STARTA
-                    </button>
-                    <button onclick="openShop()" class="btn-arcade py-2 px-3 bg-purple-900/80 border border-purple-500 text-purple-200 font-arcade font-bold text-sm rounded-xl hover:bg-purple-800 flex items-center gap-1.5">
-                        <i class="fa-solid fa-store text-purple-400"></i> SHOP
-                    </button>
-                </div>
-            </div>
-
-            <!-- SHOP OVERLAY -->
-            <div id="shop-overlay" class="hidden absolute inset-0 bg-slate-950/95 backdrop-blur-md flex flex-col items-center justify-start p-3 text-center z-20 overflow-y-auto">
-                <div class="flex justify-between items-center w-full max-w-xs mb-2 border-b border-slate-800 pb-1.5">
-                    <h2 class="text-base font-arcade font-bold text-purple-400 neon-text-purple"><i class="fa-solid fa-store"></i> SKIN SHOP</h2>
-                    <button onclick="closeShop()" class="text-slate-400 hover:text-white text-base"><i class="fa-solid fa-xmark"></i></button>
-                </div>
-
-                <div class="w-full max-w-xs space-y-1.5 mb-3 pr-1 max-h-[220px] overflow-y-auto">
-                    <div id="shop-items-container" class="space-y-1.5"></div>
-                </div>
-
-                <button onclick="closeShop()" class="w-full max-w-xs py-1.5 bg-slate-800 text-slate-300 font-bold text-xs rounded-xl border border-slate-700">TILLBAKA</button>
-            </div>
-        </div>
-
-        <!-- Mobilkontroller (D-Pad) -->
-        <div class="w-full max-w-[340px] sm:max-w-md mt-2 flex justify-center">
-            <div class="grid grid-cols-3 gap-1.5 w-56 h-28">
-                <div></div>
-                <button id="btn-up" class="btn-touch bg-slate-800/90 border border-cyan-500/60 rounded-xl flex items-center justify-center text-xl text-cyan-400 shadow">
-                    <i class="fa-solid fa-chevron-up pointer-events-none"></i>
-                </button>
-                <div></div>
-                
-                <button id="btn-left" class="btn-touch bg-slate-800/90 border border-cyan-500/60 rounded-xl flex items-center justify-center text-xl text-cyan-400 shadow">
-                    <i class="fa-solid fa-chevron-left pointer-events-none"></i>
-                </button>
-                <button id="btn-down" class="btn-touch bg-slate-800/90 border border-cyan-500/60 rounded-xl flex items-center justify-center text-xl text-cyan-400 shadow">
-                    <i class="fa-solid fa-chevron-down pointer-events-none"></i>
-                </button>
-                <button id="btn-right" class="btn-touch bg-slate-800/90 border border-cyan-500/60 rounded-xl flex items-center justify-center text-xl text-cyan-400 shadow">
-                    <i class="fa-solid fa-chevron-right pointer-events-none"></i>
+                <button id="start-btn" onclick="startGame()" class="btn-arcade w-full max-w-xs py-3 px-6 bg-gradient-to-r from-cyan-500 to-blue-600 hover:from-cyan-400 hover:to-blue-500 text-slate-950 font-arcade font-black text-base rounded-xl shadow-lg border border-cyan-300 cursor-pointer tracking-wider">
+                    STARTA SPRANGET
                 </button>
             </div>
         </div>
@@ -197,59 +118,46 @@
 
     <!-- SPEL-LOGIK -->
     <script>
-        const GRID_SIZE = 20;
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const CANVAS_SIZE = 400;
-        canvas.width = CANVAS_SIZE;
-        canvas.height = CANVAS_SIZE;
-        const CELL_SIZE = CANVAS_SIZE / GRID_SIZE;
+        const CANVAS_WIDTH = 600;
+        const CANVAS_HEIGHT = 450;
+        canvas.width = CANVAS_WIDTH;
+        canvas.height = CANVAS_HEIGHT;
 
-        let snake = [];
-        let direction = 'RIGHT';
-        let nextDirection = 'RIGHT';
-        let food = { x: -1, y: -1 };
-        let bonusFood = null;
-        let coinItem = null;
-        let empAmmo = null;
-        let score = 0;
-        let coins = parseInt(localStorage.getItem('neon_snake_coins')) || 0;
-        let highScore = parseInt(localStorage.getItem('neon_snake_highscore')) || 0;
-        let activeSkin = localStorage.getItem('neon_snake_skin') || 'cyan';
-        let unlockedSkins = JSON.parse(localStorage.getItem('neon_snake_unlocked_skins')) || ['cyan'];
+        const GROUND_Y = 380;
+        const CEILING_Y = 70;
+        const PLAYER_SIZE = 28;
 
-        let gameInterval = null;
-        let isPaused = false;
+        let isRunning = false;
         let isGameOver = false;
-        let gameSpeed = 95;
+        let score = 0;
+        let gems = parseInt(localStorage.getItem('gt_gems')) || 0;
+        let highScore = parseInt(localStorage.getItem('gt_highscore')) || 0;
+        let gameSpeed = 5;
         let isMuted = false;
-        let mouthTick = 0;
 
-        // BOSS SYSTEM
-        let isBossActive = false;
-        let bossHp = 100;
-        let bossMaxHp = 100;
-        let bossPos = { x: 9, y: 2 };
-        let bossObstacles = [];
-        let nextBossScoreThreshold = 250;
+        // Spelaren
+        let player = {
+            x: 80,
+            y: GROUND_Y - PLAYER_SIZE,
+            targetY: GROUND_Y - PLAYER_SIZE,
+            vy: 0,
+            isGravityInverted: false, // false = golv, true = tak
+            trail: []
+        };
 
-        const SKINS = [
-            { id: 'cyan', name: 'Cyber Cyan', cost: 0, color: '#22d3ee', hue: 180 },
-            { id: 'red', name: 'Inferno Red', cost: 30, color: '#ef4444', hue: 10 },
-            { id: 'green', name: 'Matrix Code', cost: 50, color: '#10b981', hue: 140 },
-            { id: 'gold', name: 'Golden Royale', cost: 80, color: '#facc15', hue: 48 },
-            { id: 'violet', name: 'Neon Violet', cost: 100, color: '#a855f7', hue: 270 },
-            { id: 'pink', name: 'Kawaii Pink', cost: 120, color: '#f472b6', hue: 330 },
-            { id: 'white', name: 'Pure White', cost: 150, color: '#f8fafc', hue: 0 },
-            { id: 'orange', name: 'Toxic Hazard', cost: 180, color: '#f97316', hue: 25 },
-            { id: 'blue', name: 'Deep Space', cost: 200, color: '#3b82f6', hue: 215 },
-            { id: 'rainbow', name: 'Rainbow Chroma', cost: 300, color: 'rainbow', hue: 'rainbow' }
-        ];
+        // Objekt & Hinder
+        let obstacles = [];
+        let gemItems = [];
+        let particles = [];
+        let spawnTimer = 0;
 
-        document.getElementById('high-score').textContent = highScore;
-        document.getElementById('coins').textContent = coins;
+        document.getElementById('high-score').textContent = `${highScore}m`;
+        document.getElementById('gems').textContent = gems;
 
+        // Ljudsystem (Web Audio API)
         const AudioContext = window.AudioContext || window.webkitAudioContext;
         let audioCtx = null;
 
@@ -269,563 +177,319 @@
             gain.connect(audioCtx.destination);
             const now = audioCtx.currentTime;
 
-            if (type === 'eat') {
+            if (type === 'flip') {
                 osc.type = 'sine';
-                osc.frequency.setValueAtTime(300, now);
-                osc.frequency.exponentialRampToValueAtTime(600, now + 0.08);
+                osc.frequency.setValueAtTime(player.isGravityInverted ? 300 : 500, now);
+                osc.frequency.exponentialRampToValueAtTime(player.isGravityInverted ? 600 : 250, now + 0.1);
                 gain.gain.setValueAtTime(0.15, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.08);
-                osc.start(now);
-                osc.stop(now + 0.08);
-            } else if (type === 'bonus') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(523.25, now);
-                osc.frequency.setValueAtTime(659.25, now + 0.06);
-                osc.frequency.setValueAtTime(783.99, now + 0.12);
-                gain.gain.setValueAtTime(0.2, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.25);
-                osc.start(now);
-                osc.stop(now + 0.25);
-            } else if (type === 'coin') {
-                osc.type = 'triangle';
-                osc.frequency.setValueAtTime(800, now);
-                osc.frequency.exponentialRampToValueAtTime(1200, now + 0.1);
-                gain.gain.setValueAtTime(0.2, now);
                 gain.gain.linearRampToValueAtTime(0.01, now + 0.1);
                 osc.start(now);
                 osc.stop(now + 0.1);
-            } else if (type === 'boss_hit') {
-                osc.type = 'square';
-                osc.frequency.setValueAtTime(150, now);
-                osc.frequency.exponentialRampToValueAtTime(400, now + 0.15);
-                gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.15);
+            } else if (type === 'gem') {
+                osc.type = 'triangle';
+                osc.frequency.setValueAtTime(600, now);
+                osc.frequency.setValueAtTime(900, now + 0.08);
+                gain.gain.setValueAtTime(0.2, now);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.18);
                 osc.start(now);
-                osc.stop(now + 0.15);
-            } else if (type === 'gameover') {
+                osc.stop(now + 0.18);
+            } else if (type === 'hit') {
                 osc.type = 'sawtooth';
-                osc.frequency.setValueAtTime(250, now);
-                osc.frequency.exponentialRampToValueAtTime(40, now + 0.4);
+                osc.frequency.setValueAtTime(200, now);
+                osc.frequency.exponentialRampToValueAtTime(40, now + 0.35);
                 gain.gain.setValueAtTime(0.3, now);
-                gain.gain.linearRampToValueAtTime(0.01, now + 0.4);
+                gain.gain.linearRampToValueAtTime(0.01, now + 0.35);
                 osc.start(now);
-                osc.stop(now + 0.4);
+                osc.stop(now + 0.35);
             }
         }
 
         function toggleMute() {
             isMuted = !isMuted;
-            document.getElementById('sound-icon').className = isMuted ? 'fa-solid fa-volume-xmark text-slate-500 pointer-events-none' : 'fa-solid fa-volume-high text-pink-400 pointer-events-none';
+            document.getElementById('sound-icon').className = isMuted 
+                ? 'fa-solid fa-volume-xmark text-slate-500 pointer-events-none' 
+                : 'fa-solid fa-volume-high text-cyan-400 pointer-events-none';
         }
 
-        function setSpeed(speed) {
-            document.querySelectorAll('.speed-btn').forEach(btn => {
-                btn.className = 'speed-btn px-2 py-1 rounded-lg border border-slate-700 bg-slate-800 text-[11px] font-bold text-slate-300 transition';
-            });
-            const activeBtn = document.getElementById(`speed-${speed}`);
-            activeBtn.className = 'speed-btn px-2 py-1 rounded-lg border border-cyan-500 bg-cyan-950/50 text-[11px] font-bold text-cyan-400 transition';
-            if (speed === 'easy') gameSpeed = 130;
-            if (speed === 'medium') gameSpeed = 95;
-            if (speed === 'hard') gameSpeed = 65;
+        function flipGravity() {
+            if (!isRunning || isGameOver) return;
+            initAudio();
+            player.isGravityInverted = !player.isGravityInverted;
+            playSound('flip');
+
+            // Skapa partiklar vid vändning
+            for (let i = 0; i < 10; i++) {
+                particles.push({
+                    x: player.x + PLAYER_SIZE / 2,
+                    y: player.y + PLAYER_SIZE / 2,
+                    vx: (Math.random() - 0.5) * 4,
+                    vy: (Math.random() - 0.5) * 4,
+                    size: Math.random() * 4 + 2,
+                    color: '#22d3ee',
+                    life: 1
+                });
+            }
         }
 
         function startGame() {
             initAudio();
-            snake = [{ x: 10, y: 12 }, { x: 10, y: 13 }, { x: 10, y: 14 }];
-            direction = 'UP';
-            nextDirection = 'UP';
-            score = 0;
-            nextBossScoreThreshold = 250;
-            isBossActive = false;
-            isPaused = false;
+            isRunning = true;
             isGameOver = false;
-            coinItem = null;
-            bonusFood = null;
-            empAmmo = null;
-            bossObstacles = [];
+            score = 0;
+            gameSpeed = 6;
+            obstacles = [];
+            gemItems = [];
+            particles = [];
+            spawnTimer = 0;
 
-            document.getElementById('score').textContent = '0';
-            document.getElementById('bonus-timer-container').classList.add('hidden');
-            document.getElementById('boss-hp-container').classList.add('hidden');
-            document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
+            player.isGravityInverted = false;
+            player.y = GROUND_Y - PLAYER_SIZE;
+            player.vy = 0;
+            player.trail = [];
 
-            spawnFood();
+            document.getElementById('score').textContent = '0m';
             document.getElementById('overlay').classList.add('hidden');
 
-            if (gameInterval) clearInterval(gameInterval);
-            gameInterval = setInterval(gameLoop, gameSpeed);
+            requestAnimationFrame(gameLoop);
         }
 
-        function getRandomEmptyCell() {
-            let valid = false;
-            let rx, ry;
-            let attempts = 0;
-            while (!valid && attempts < 500) {
-                attempts++;
-                rx = Math.floor(Math.random() * GRID_SIZE);
-                ry = Math.floor(Math.random() * GRID_SIZE);
+        function spawnObstacleOrGem() {
+            spawnTimer++;
+            if (spawnTimer > Math.max(35, 70 - Math.floor(score / 50))) {
+                spawnTimer = 0;
 
-                const onSnake = snake.some(s => s.x === rx && s.y === ry);
-                const onFood = food && food.x === rx && food.y === ry;
-                const onCoin = coinItem && coinItem.x === rx && coinItem.y === ry;
-                const onBonus = bonusFood && bonusFood.x === rx && bonusFood.y === ry;
-                const onEmp = empAmmo && empAmmo.x === rx && empAmmo.y === ry;
-                const onBoss = isBossActive && (rx === bossPos.x || rx === bossPos.x + 1) && (ry === bossPos.y || ry === bossPos.y + 1);
+                const isCeiling = Math.random() < 0.5;
+                const type = Math.random();
 
-                valid = !onSnake && !onFood && !onCoin && !onBonus && !onEmp && !onBoss;
-            }
-            return { x: rx, y: ry };
-        }
-
-        function spawnFood() {
-            const pos = getRandomEmptyCell();
-            food = { x: pos.x, y: pos.y };
-
-            if (!coinItem && Math.random() < 0.35) spawnCoin();
-            if (!bonusFood && Math.random() < 0.3) spawnBonusFood();
-        }
-
-        function spawnCoin() {
-            const pos = getRandomEmptyCell();
-            coinItem = { x: pos.x, y: pos.y };
-        }
-
-        function spawnBonusFood() {
-            const pos = getRandomEmptyCell();
-            bonusFood = { x: pos.x, y: pos.y, timer: 65, maxTimer: 65 };
-            document.getElementById('bonus-timer-container').classList.remove('hidden');
-        }
-
-        function spawnEmpAmmo() {
-            const pos = getRandomEmptyCell();
-            empAmmo = { x: pos.x, y: pos.y };
-        }
-
-        function triggerBossFight() {
-            isBossActive = true;
-            bossHp = 100;
-            bossPos = { x: 9, y: 2 };
-            document.getElementById('boss-hp-container').classList.remove('hidden');
-            document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-red-500/80 neon-glow-red shadow-2xl flex items-center justify-center';
-            spawnEmpAmmo();
-            updateBossHpBar();
-        }
-
-        function updateBossHpBar() {
-            const percent = Math.max(0, (bossHp / bossMaxHp) * 100);
-            document.getElementById('boss-hp-bar').style.width = `${percent}%`;
-            document.getElementById('boss-hp-text').textContent = `${bossHp}/${bossMaxHp}`;
-        }
-
-        function gameLoop() {
-            if (isPaused || isGameOver) return;
-
-            direction = nextDirection;
-            const head = { ...snake[0] };
-
-            if (direction === 'UP') head.y--;
-            if (direction === 'DOWN') head.y++;
-            if (direction === 'LEFT') head.x--;
-            if (direction === 'RIGHT') head.x++;
-
-            // Tunnel-effekt
-            if (head.x < 0) head.x = GRID_SIZE - 1;
-            if (head.x >= GRID_SIZE) head.x = 0;
-            if (head.y < 0) head.y = GRID_SIZE - 1;
-            if (head.y >= GRID_SIZE) head.y = 0;
-
-            // Krocka med svans
-            if (snake.some(s => s.x === head.x && s.y === head.y)) {
-                return gameOver();
-            }
-
-            // Krocka med Boss
-            if (isBossActive) {
-                const hitBossX = (head.x === bossPos.x || head.x === bossPos.x + 1);
-                const hitBossY = (head.y === bossPos.y || head.y === bossPos.y + 1);
-                if ((hitBossX && hitBossY) || bossObstacles.some(o => o.x === head.x && o.y === head.y)) {
-                    return gameOver();
-                }
-            }
-
-            snake.unshift(head);
-            mouthTick++;
-
-            // Äta vanlig mat
-            if (head.x === food.x && head.y === food.y) {
-                score += 10;
-                document.getElementById('score').textContent = score;
-                playSound('eat');
-                spawnFood();
-            } 
-            // Guldbonus
-            else if (bonusFood && head.x === bonusFood.x && head.y === bonusFood.y) {
-                score += 30;
-                document.getElementById('score').textContent = score;
-                playSound('bonus');
-                bonusFood = null;
-                document.getElementById('bonus-timer-container').classList.add('hidden');
-                snake.pop();
-            }
-            // Mynt
-            else if (coinItem && head.x === coinItem.x && head.y === coinItem.y) {
-                coins += 1;
-                localStorage.setItem('neon_snake_coins', coins);
-                document.getElementById('coins').textContent = coins;
-                playSound('coin');
-                coinItem = null;
-                snake.pop();
-            } 
-            // EMP Skott
-            else if (isBossActive && empAmmo && head.x === empAmmo.x && head.y === empAmmo.y) {
-                bossHp -= 35;
-                playSound('boss_hit');
-                updateBossHpBar();
-
-                if (bossHp <= 0) {
-                    isBossActive = false;
-                    coins += 30;
-                    localStorage.setItem('neon_snake_coins', coins);
-                    document.getElementById('coins').textContent = coins;
-                    document.getElementById('boss-hp-container').classList.add('hidden');
-                    document.getElementById('touch-area').className = 'relative w-[340px] h-[340px] sm:w-[400px] sm:h-[400px] bg-slate-950 rounded-2xl overflow-hidden border-2 border-cyan-500/50 neon-glow-cyan shadow-2xl flex items-center justify-center';
-                    bossObstacles = [];
-                    empAmmo = null;
-                    spawnFood();
+                if (type < 0.7) {
+                    // Skapa hinder
+                    const h = Math.random() * 40 + 40;
+                    obstacles.push({
+                        x: CANVAS_WIDTH + 20,
+                        y: isCeiling ? CEILING_Y : GROUND_Y - h,
+                        w: 24,
+                        h: h,
+                        isCeiling: isCeiling
+                    });
                 } else {
-                    spawnEmpAmmo();
-                }
-                snake.pop();
-            } 
-            else {
-                snake.pop();
-            }
-
-            if (score >= nextBossScoreThreshold && !isBossActive) {
-                nextBossScoreThreshold += 250;
-                triggerBossFight();
-            }
-
-            if (bonusFood) {
-                bonusFood.timer--;
-                const percent = (bonusFood.timer / bonusFood.maxTimer) * 100;
-                document.getElementById('bonus-timer-bar').style.width = `${percent}%`;
-                if (bonusFood.timer <= 0) {
-                    bonusFood = null;
-                    document.getElementById('bonus-timer-container').classList.add('hidden');
+                    // Skapa Ädelsten
+                    gemItems.push({
+                        x: CANVAS_WIDTH + 20,
+                        y: isCeiling ? CEILING_Y + 15 : GROUND_Y - 35,
+                        size: 16
+                    });
                 }
             }
-
-            if (isBossActive && Math.random() < 0.15) {
-                bossObstacles = [
-                    { x: (bossPos.x + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE, y: (bossPos.y + Math.floor(Math.random() * 5) - 2 + GRID_SIZE) % GRID_SIZE }
-                ];
-            }
-
-            draw();
         }
 
-        function getSkinColor(index) {
-            const currentSkinObj = SKINS.find(s => s.id === activeSkin) || SKINS[0];
-            if (currentSkinObj.hue === 'rainbow') {
-                return `hsl(${(Date.now() / 10 + index * 15) % 360}, 100%, 50%)`;
+        function update() {
+            if (!isRunning || isGameOver) return;
+
+            score += 0.2;
+            document.getElementById('score').textContent = `${Math.floor(score)}m`;
+
+            // Öka hastigheten gradvis
+            if (gameSpeed < 13) gameSpeed += 0.0015;
+
+            // Spelarens Tyngdkraft & Rörelse
+            const targetY = player.isGravityInverted ? CEILING_Y : GROUND_Y - PLAYER_SIZE;
+            player.y += (targetY - player.y) * 0.22;
+
+            // Trail-effekt
+            player.trail.unshift({ x: player.x, y: player.y });
+            if (player.trail.length > 5) player.trail.pop();
+
+            // Hantera Partiklar
+            for (let i = particles.length - 1; i >= 0; i--) {
+                let p = particles[i];
+                p.x += p.vx;
+                p.y += p.vy;
+                p.life -= 0.04;
+                if (p.life <= 0) particles.splice(i, 1);
             }
-            if (activeSkin === 'white') {
-                return `hsl(0, 0%, ${100 - index * 2}%)`;
+
+            spawnObstacleOrGem();
+
+            // Uppdatera Hinder
+            for (let i = obstacles.length - 1; i >= 0; i--) {
+                let obs = obstacles[i];
+                obs.x -= gameSpeed;
+
+                // Kollision med spelaren
+                if (
+                    player.x < obs.x + obs.w &&
+                    player.x + PLAYER_SIZE > obs.x &&
+                    player.y < obs.y + obs.h &&
+                    player.y + PLAYER_SIZE > obs.y
+                ) {
+                    gameOver();
+                    return;
+                }
+
+                if (obs.x + obs.w < -20) obstacles.splice(i, 1);
             }
-            return `hsl(${currentSkinObj.hue + (index * 3) % 40}, 100%, 50%)`;
+
+            // Uppdatera Skatter
+            for (let i = gemItems.length - 1; i >= 0; i--) {
+                let gem = gemItems[i];
+                gem.x -= gameSpeed;
+
+                // Plocka upp ädelsten
+                if (
+                    player.x < gem.x + gem.size &&
+                    player.x + PLAYER_SIZE > gem.x &&
+                    player.y < gem.y + gem.size &&
+                    player.y + PLAYER_SIZE > gem.y
+                ) {
+                    gems += 1;
+                    localStorage.setItem('gt_gems', gems);
+                    document.getElementById('gems').textContent = gems;
+                    playSound('gem');
+
+                    // Guldpartiklar
+                    for (let j = 0; j < 8; j++) {
+                        particles.push({
+                            x: gem.x,
+                            y: gem.y,
+                            vx: (Math.random() - 0.5) * 5,
+                            vy: (Math.random() - 0.5) * 5,
+                            size: 3,
+                            color: '#facc15',
+                            life: 1
+                        });
+                    }
+
+                    gemItems.splice(i, 1);
+                } else if (gem.x < -20) {
+                    gemItems.splice(i, 1);
+                }
+            }
         }
 
         function draw() {
-            ctx.fillStyle = '#090d16';
-            ctx.fillRect(0, 0, CANVAS_SIZE, CANVAS_SIZE);
+            // Bakgrund
+            ctx.fillStyle = '#080911';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CANVAS_HEIGHT);
 
-            ctx.strokeStyle = '#1e293b';
-            ctx.lineWidth = 0.5;
-            for (let i = 0; i <= GRID_SIZE; i++) {
-                ctx.beginPath();
-                ctx.moveTo(i * CELL_SIZE, 0);
-                ctx.lineTo(i * CELL_SIZE, CANVAS_SIZE);
-                ctx.stroke();
-                ctx.beginPath();
-                ctx.moveTo(0, i * CELL_SIZE);
-                ctx.lineTo(CANVAS_SIZE, i * CELL_SIZE);
-                ctx.stroke();
-            }
+            // Rita Tak & Golv med Neon-glöd
+            ctx.fillStyle = '#1e293b';
+            ctx.fillRect(0, 0, CANVAS_WIDTH, CEILING_Y);
+            ctx.fillRect(0, GROUND_Y, CANVAS_WIDTH, CANVAS_HEIGHT - GROUND_Y);
 
-            // Boss
-            if (isBossActive) {
+            ctx.strokeStyle = '#22d3ee';
+            ctx.lineWidth = 3;
+            ctx.shadowColor = '#22d3ee';
+            ctx.shadowBlur = 10;
+
+            // Golvlinje
+            ctx.beginPath();
+            ctx.moveTo(0, GROUND_Y);
+            ctx.lineTo(CANVAS_WIDTH, GROUND_Y);
+            ctx.stroke();
+
+            // Taklinje
+            ctx.beginPath();
+            ctx.moveTo(0, CEILING_Y);
+            ctx.lineTo(CANVAS_WIDTH, CEILING_Y);
+            ctx.stroke();
+            ctx.shadowBlur = 0;
+
+            // Rita Partiklar
+            particles.forEach(p => {
+                ctx.fillStyle = p.color;
+                ctx.globalAlpha = p.life;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+            ctx.globalAlpha = 1.0;
+
+            // Rita Trail
+            player.trail.forEach((t, index) => {
+                ctx.fillStyle = `rgba(34, 211, 238, ${0.4 - index * 0.08})`;
+                ctx.fillRect(t.x, t.y, PLAYER_SIZE, PLAYER_SIZE);
+            });
+
+            // Rita Spelaren (Neon-kub med inre kärna)
+            ctx.fillStyle = '#ec4899';
+            ctx.shadowColor = '#ec4899';
+            ctx.shadowBlur = 12;
+            ctx.fillRect(player.x, player.y, PLAYER_SIZE, PLAYER_SIZE);
+            ctx.shadowBlur = 0;
+
+            ctx.fillStyle = '#ffffff';
+            ctx.fillRect(player.x + 6, player.y + 6, PLAYER_SIZE - 12, PLAYER_SIZE - 12);
+
+            // Rita Hinder (Röda Lasrar)
+            obstacles.forEach(obs => {
                 ctx.fillStyle = '#ef4444';
                 ctx.shadowColor = '#ef4444';
-                ctx.shadowBlur = 15;
-                ctx.fillRect(bossPos.x * CELL_SIZE, bossPos.y * CELL_SIZE, CELL_SIZE * 2, CELL_SIZE * 2);
-                ctx.shadowBlur = 0;
-
-                bossObstacles.forEach(bo => {
-                    ctx.fillStyle = '#f87171';
-                    ctx.fillRect(bo.x * CELL_SIZE + 2, bo.y * CELL_SIZE + 2, CELL_SIZE - 4, CELL_SIZE - 4);
-                });
-            }
-
-            // EMP Skott
-            if (empAmmo) {
-                ctx.fillStyle = '#38bdf8';
-                ctx.shadowColor = '#38bdf8';
-                ctx.shadowBlur = 15;
-                ctx.fillRect(empAmmo.x * CELL_SIZE + 3, empAmmo.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
-                ctx.shadowBlur = 0;
-            }
-
-            // Mynt
-            if (coinItem) {
-                ctx.fillStyle = '#a855f7';
-                ctx.shadowColor = '#a855f7';
                 ctx.shadowBlur = 12;
-                ctx.beginPath();
-                ctx.arc(coinItem.x * CELL_SIZE + CELL_SIZE / 2, coinItem.y * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 3, 0, Math.PI * 2);
-                ctx.fill();
+                ctx.fillRect(obs.x, obs.y, obs.w, obs.h);
                 ctx.shadowBlur = 0;
-            }
 
-            // Guldbonus
-            if (bonusFood) {
+                // Laser-mönster i mitten
+                ctx.fillStyle = '#fca5a5';
+                ctx.fillRect(obs.x + 4, obs.y, obs.w - 8, obs.h);
+            });
+
+            // Rita Skatter (Gula diamanter)
+            gemItems.forEach(gem => {
                 ctx.fillStyle = '#facc15';
                 ctx.shadowColor = '#facc15';
-                ctx.shadowBlur = 15;
-                ctx.fillRect(bonusFood.x * CELL_SIZE + 3, bonusFood.y * CELL_SIZE + 3, CELL_SIZE - 6, CELL_SIZE - 6);
-                ctx.shadowBlur = 0;
-            }
-
-            // Vanlig mat
-            if (!isBossActive && food.x >= 0) {
-                ctx.fillStyle = '#22d3ee';
-                ctx.shadowColor = '#22d3ee';
-                ctx.shadowBlur = 12;
+                ctx.shadowBlur = 10;
                 ctx.beginPath();
-                ctx.arc(food.x * CELL_SIZE + CELL_SIZE / 2, food.y * CELL_SIZE + CELL_SIZE / 2, CELL_SIZE / 2.5, 0, Math.PI * 2);
+                ctx.moveTo(gem.x + gem.size / 2, gem.y);
+                ctx.lineTo(gem.x + gem.size, gem.y + gem.size / 2);
+                ctx.lineTo(gem.x + gem.size / 2, gem.y + gem.size);
+                ctx.lineTo(gem.x, gem.y + gem.size / 2);
+                ctx.closePath();
                 ctx.fill();
-                ctx.shadowBlur = 0;
-            }
-
-            // Ormen med Pac-Man-mun & ögon
-            snake.forEach((segment, index) => {
-                const isHead = index === 0;
-                ctx.fillStyle = isHead ? '#ec4899' : getSkinColor(index);
-                if (isHead) {
-                    ctx.shadowColor = '#ec4899';
-                    ctx.shadowBlur = 10;
-                }
-
-                const x = segment.x * CELL_SIZE + 1;
-                const y = segment.y * CELL_SIZE + 1;
-                const w = CELL_SIZE - 2;
-                const h = CELL_SIZE - 2;
-
-                if (isHead) {
-                    const isOpen = (mouthTick % 2 === 0);
-                    let startAngle = 0, endAngle = Math.PI * 2;
-
-                    if (isOpen) {
-                        if (direction === 'RIGHT') { startAngle = 0.2; endAngle = 1.8; }
-                        else if (direction === 'DOWN') { startAngle = 0.7; endAngle = 2.3; }
-                        else if (direction === 'LEFT') { startAngle = 1.2; endAngle = 2.8; }
-                        else if (direction === 'UP') { startAngle = 1.7; endAngle = 3.3; }
-                    }
-
-                    ctx.beginPath();
-                    ctx.arc(x + w / 2, y + h / 2, w / 2, startAngle * Math.PI, endAngle * Math.PI);
-                    ctx.lineTo(x + w / 2, y + h / 2);
-                    ctx.fill();
-
-                    // Öga
-                    ctx.fillStyle = '#ffffff';
-                    let eyeX = x + w / 2, eyeY = y + h / 2;
-                    if (direction === 'RIGHT') { eyeX = x + w * 0.7; eyeY = y + h * 0.3; }
-                    else if (direction === 'LEFT') { eyeX = x + w * 0.3; eyeY = y + h * 0.3; }
-                    else if (direction === 'UP') { eyeX = x + w * 0.7; eyeY = y + h * 0.3; }
-                    else if (direction === 'DOWN') { eyeX = x + w * 0.7; eyeY = y + h * 0.7; }
-
-                    ctx.beginPath();
-                    ctx.arc(eyeX, eyeY, 2.5, 0, Math.PI * 2);
-                    ctx.fill();
-                    ctx.fillStyle = '#000000';
-                    ctx.beginPath();
-                    ctx.arc(eyeX, eyeY, 1, 0, Math.PI * 2);
-                    ctx.fill();
-                } else {
-                    ctx.beginPath();
-                    ctx.roundRect(x, y, w, h, 4);
-                    ctx.fill();
-                }
                 ctx.shadowBlur = 0;
             });
         }
 
         function gameOver() {
             isGameOver = true;
-            clearInterval(gameInterval);
-            playSound('gameover');
+            isRunning = false;
+            playSound('hit');
 
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('neon_snake_highscore', highScore);
-                document.getElementById('high-score').textContent = highScore;
+            const finalScore = Math.floor(score);
+            if (finalScore > highScore) {
+                highScore = finalScore;
+                localStorage.setItem('gt_highscore', highScore);
+                document.getElementById('high-score').textContent = `${highScore}m`;
             }
 
             const overlay = document.getElementById('overlay');
             document.getElementById('overlay-title').textContent = 'GAME OVER';
-            document.getElementById('overlay-title').className = 'text-xl sm:text-4xl font-arcade font-black text-pink-500 mb-1 neon-text-pink';
-            document.getElementById('overlay-desc').textContent = `Du fick ${score} poäng och samlade ${coins} mynt!`;
+            document.getElementById('overlay-title').className = 'text-2xl sm:text-4xl font-arcade font-black text-pink-500 mb-2 neon-text-pink';
+            document.getElementById('overlay-desc').textContent = `Du sprang ${finalScore} meter och samlade ${gems} ädelstenar!`;
             document.getElementById('start-btn').textContent = 'SPELA IGEN';
             overlay.classList.remove('hidden');
         }
 
-        function togglePause() {
-            if (isGameOver) return;
-            isPaused = !isPaused;
-
-            const overlay = document.getElementById('overlay');
-            if (isPaused) {
-                document.getElementById('overlay-title').textContent = 'PAUSAT';
-                document.getElementById('overlay-title').className = 'text-xl sm:text-4xl font-arcade font-black text-cyan-400 mb-1 neon-text-cyan';
-                document.getElementById('overlay-desc').textContent = 'Klicka nedan för att fortsätta.';
-                document.getElementById('start-btn').textContent = 'FORTSÄTT';
-                overlay.classList.remove('hidden');
-            } else {
-                overlay.classList.add('hidden');
+        function gameLoop() {
+            update();
+            draw();
+            if (isRunning) {
+                requestAnimationFrame(gameLoop);
             }
         }
 
-        function openShop() {
-            renderShop();
-            document.getElementById('shop-overlay').classList.remove('hidden');
-        }
-
-        function closeShop() {
-            document.getElementById('shop-overlay').classList.add('hidden');
-        }
-
-        function selectSkin(skinId) {
-            activeSkin = skinId;
-            localStorage.setItem('neon_snake_skin', skinId);
-            renderShop();
-        }
-
-        function buySkin(skinId, cost) {
-            if (unlockedSkins.includes(skinId)) {
-                selectSkin(skinId);
-                return;
-            }
-            if (coins >= cost) {
-                coins -= cost;
-                localStorage.setItem('neon_snake_coins', coins);
-                document.getElementById('coins').textContent = coins;
-                unlockedSkins.push(skinId);
-                localStorage.setItem('neon_snake_unlocked_skins', JSON.stringify(unlockedSkins));
-                selectSkin(skinId);
-            }
-        }
-
-        function renderShop() {
-            const container = document.getElementById('shop-items-container');
-            container.innerHTML = '';
-
-            SKINS.forEach(s => {
-                const isUnlocked = unlockedSkins.includes(s.id);
-                const isSelected = activeSkin === s.id;
-
-                const div = document.createElement('div');
-                div.className = 'flex items-center justify-between bg-slate-900 border border-slate-800 p-1.5 rounded-xl';
-
-                const colorCircle = s.color === 'rainbow' 
-                    ? `<div class="w-4 h-4 rounded-full bg-gradient-to-r from-red-500 via-green-500 to-blue-500 animate-spin"></div>`
-                    : `<div class="w-4 h-4 rounded-full" style="background-color: ${s.color}"></div>`;
-
-                let btnHtml = '';
-                if (isSelected) {
-                    btnHtml = `<button class="px-2 py-0.5 bg-cyan-500 text-slate-950 font-bold text-[9px] rounded-md">VALD</button>`;
-                } else if (isUnlocked) {
-                    btnHtml = `<button onclick="selectSkin('${s.id}')" class="px-2 py-0.5 bg-slate-700 text-white font-bold text-[9px] rounded-md">VÄLJ</button>`;
-                } else {
-                    btnHtml = `<button onclick="buySkin('${s.id}', ${s.cost})" class="px-2 py-0.5 bg-purple-600 text-white font-bold text-[9px] rounded-md">${s.cost} 🪙</button>`;
-                }
-
-                div.innerHTML = `
-                    <div class="flex items-center gap-2">
-                        ${colorCircle}
-                        <span class="text-xs font-bold text-slate-200">${s.name}</span>
-                    </div>
-                    ${btnHtml}
-                `;
-                container.appendChild(div);
-            });
-        }
-
-        window.addEventListener('keydown', e => {
-            if (['ArrowUp', 'ArrowDown', 'ArrowLeft', 'ArrowRight', ' '].includes(e.key)) e.preventDefault();
-            if (e.key === ' ' || e.code === 'Space') {
-                if (isGameOver) startGame(); else togglePause();
-                return;
-            }
-            if (isPaused || isGameOver) return;
-
-            if ((e.key === 'ArrowUp' || e.key === 'w' || e.key === 'W') && direction !== 'DOWN') nextDirection = 'UP';
-            if ((e.key === 'ArrowDown' || e.key === 's' || e.key === 'S') && direction !== 'UP') nextDirection = 'DOWN';
-            if ((e.key === 'ArrowLeft' || e.key === 'a' || e.key === 'A') && direction !== 'RIGHT') nextDirection = 'LEFT';
-            if ((e.key === 'ArrowRight' || e.key === 'd' || e.key === 'D') && direction !== 'LEFT') nextDirection = 'RIGHT';
+        // Event-lyssnare
+        const gameContainer = document.getElementById('game-container');
+        gameContainer.addEventListener('pointerdown', (e) => {
+            e.preventDefault();
+            flipGravity();
         });
 
-        function changeDir(dir) {
-            initAudio();
-            if (navigator.vibrate) navigator.vibrate(12);
-            if (isPaused || isGameOver) return;
-            if (dir === 'UP' && direction !== 'DOWN') nextDirection = 'UP';
-            if (dir === 'DOWN' && direction !== 'UP') nextDirection = 'DOWN';
-            if (dir === 'LEFT' && direction !== 'RIGHT') nextDirection = 'LEFT';
-            if (dir === 'RIGHT' && direction !== 'LEFT') nextDirection = 'RIGHT';
-        }
-
-        const bindBtn = (id, dir) => {
-            const btn = document.getElementById(id);
-            if (btn) {
-                btn.addEventListener('pointerdown', (e) => {
-                    e.preventDefault();
-                    changeDir(dir);
-                });
+        window.addEventListener('keydown', (e) => {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                flipGravity();
             }
-        };
+        });
 
-        bindBtn('btn-up', 'UP');
-        bindBtn('btn-down', 'DOWN');
-        bindBtn('btn-left', 'LEFT');
-        bindBtn('btn-right', 'RIGHT');
-
-        // FIXAD SWIPE-FUNKTIONALITET MED TOUCHMOVE OCH PASSIVE: FALSE
-        let touchStartX = 0;
-        let touchStartY = 0;
-        const touchArea = document.getElementById('touch-area');
-
-        touchArea.addEventListener('touchstart', e => {
-            touchStartX = e.touches[0].clientX;
-            touchStartY = e.touches[0].clientY;
-        }, { passive: false });
-
-        touchArea.addEventListener('touchmove', e => {
-            e.preventDefault(); // Hindrar skärmen från att skrolla
-        }, { passive: false });
-
-        touchArea.addEventListener('touchend', e => {
-            if (isPaused || isGameOver) return;
-            const diffX = e.changedTouches[0].clientX - touchStartX;
-            const diffY = e.changedTouches[0].clientY - touchStartY;
-
-            if (Math.abs(diffX) > Math.abs(diffY)) {
-                if (Math.abs(diffX) > 10) changeDir(diffX > 0 ? 'RIGHT' : 'LEFT');
-            } else {
-                if (Math.abs(diffY) > 10) changeDir(diffY > 0 ? 'DOWN' : 'UP');
-            }
-        }, { passive: false });
-
+        // Rita första bildrutan
         draw();
     </script>
 </body>
